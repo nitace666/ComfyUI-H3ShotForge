@@ -18,6 +18,10 @@ H3ShotForge connects the whole loop: write a storyboard â†’ attach references â†
 
 > Screenshots use a demo project and the English UI; no real user data is included.
 
+### Timeline editing
+
+![Timeline](docs/screenshots/en-edit.png)
+
 ## Features
 
 - **Projects**: create / open / import / recycle bin; recent projects sorted by last opened.

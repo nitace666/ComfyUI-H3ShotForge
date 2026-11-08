@@ -167,7 +167,7 @@ Check the LLM preset's Base URL / key / model in Settings. For local LM Studio, 
 
 ## License & disclaimer
 
-- **License**: Proprietary, all rights reserved. Contact the author for commercial use, redistribution or collaboration.
+- **License**: Source-available under the **PolyForm Noncommercial License 1.0.0** (see [LICENSE](LICENSE)). **Personal, educational, research and other noncommercial use is free.** **Any commercial use — including internal production use by a company, hosted services, or bundling/resale — requires a separate commercial license from the author.** Contact the author for commercial licensing.
 - **Disclaimer**: This tool only provides generation and editing capabilities. Users are responsible for generated content and must comply with local laws and platform rules. Do not use it to impersonate others, infringe portrait / copyright rights, or for any illegal purpose. Models and assets remain the property of their respective owners.
 
 ## Version

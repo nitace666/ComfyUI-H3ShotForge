@@ -1,0 +1,183 @@
+{
+  "id": "h3-postfx-interp-v1",
+  "revision": 0,
+  "last_node_id": 5,
+  "last_link_id": 5,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadVideo",
+      "pos": [
+        130,
+        130
+      ],
+      "size": [
+        270,
+        100
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "widgets_values": [
+        "PLACEHOLDER.mp4"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "GetVideoComponents",
+      "pos": [
+        160,
+        160
+      ],
+      "size": [
+        270,
+        100
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 1
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "RIFE VFI",
+      "pos": [
+        190,
+        190
+      ],
+      "size": [
+        270,
+        100
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frames",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "widgets_values": [
+        "rife49.pth",
+        10,
+        2,
+        true,
+        true,
+        1.0,
+        "float32",
+        false,
+        1
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CreateVideo",
+      "pos": [
+        220,
+        220
+      ],
+      "size": [
+        270,
+        100
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 4
+        }
+      ],
+      "widgets_values": [
+        48.0,
+        "auto",
+        "sRGB"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "SaveVideo",
+      "pos": [
+        250,
+        250
+      ],
+      "size": [
+        270,
+        100
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 5
+        }
+      ],
+      "widgets_values": [
+        "video/PLACEHOLDER",
+        "auto",
+        "auto"
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "VIDEO"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      3,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      2,
+      1,
+      4,
+      1,
+      "AUDIO"
+    ],
+    [
+      5,
+      4,
+      0,
+      5,
+      0,
+      "VIDEO"
+    ]
+  ]
+}

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN" translate="no">
+<head>
+<meta charset="utf-8">
+<!-- #92 B6：QQ 浏览器自带翻译/扩展改写页面文本缓解（translate=no + notranslate 双声明） -->
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="shell.boot.title">H3ShotForge</title>
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/portal.css">
+<link rel="stylesheet" href="css/shell.css">
+<link rel="stylesheet" href="css/projects.css">
+<link rel="stylesheet" href="css/setup.css">
+<link rel="stylesheet" href="css/resources.css">
+<link rel="stylesheet" href="css/segcards.css">
+<link rel="stylesheet" href="css/assigner.css">
+<link rel="stylesheet" href="css/at-panel.css">
+<link rel="stylesheet" href="css/submit.css">
+<link rel="stylesheet" href="css/settings.css">
+<link rel="stylesheet" href="css/edit.css">
+<link rel="stylesheet" href="css/assets.css">
+<link rel="stylesheet" href="css/canvas.css">
+<link rel="stylesheet" href="css/vocab.css">
+<script>
+  // #89 T1a：语言快键最早应用（方案 §技术设计 7①·解英文首屏 FOUC）
+  //   localStorage["gui13.uiLang"] 合法值 zh|en（N3 非法视同不存在→zh）；
+  //   zh 模式零改写（HTML 原文即中文），en 模式在首帧前改写 title 与加载占位两处静态文案。
+  //   同步经典脚本（非 module）：解析期即执行·先于首帧渲染。
+  (function () {
+    var lang = "zh";
+    try {
+      var v = localStorage.getItem("gui13.uiLang");
+      if (v === "zh" || v === "en") lang = v;
+    } catch (_e) { /* localStorage 不可用 → zh */ }
+    var de = document.documentElement;
+    de.dataset.lang = lang;
+    de.setAttribute("lang", lang === "en" ? "en" : "zh-CN");
+    if (lang !== "en") return;
+    document.title = "H3ShotForge";   // 产品名两语同形（en 显式写·与字典 shell.boot.title 对齐）
+    var patch = function () {
+      var n = document.querySelector("[data-i18n='shell.boot.loading']");
+      if (n) n.textContent = "Loading project data…";
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", patch);
+    } else {
+      patch();
+    }
+  })();
+</script>
+</head>
+<body>
+<div id="app" data-i18n="shell.boot.loading">正在加载项目数据…</div>
+<script type="module">
+  // S1-1 T2 · 应用壳+路由驱动（S1-1 T1 门户页 = portal.mount(container) 由 shell 路由委派）
+  import { initToast, showToast } from "./js/ui/toast.js";
+  import { setBase } from "./js/core/api.js";
+  import { mount as shellMount, isEditableCtxTarget } from "./js/views/shell.js";
+  import { onOpenProject as onOpenProjectPortal } from "./js/views/portal.js";
+  import { onOpenProject as onOpenProjectProjects } from "./js/views/projects.js";
+  // 批 10-M M-T2：数据服务侧化 boot（loadAll + index 总表对账 + 只读降级横幅）
+  // M-T6：+ localStorage 存量一次性迁移（bootDataStep 内）·完成 toast / 失败横幅
+  import { bootDataStep, showOfflineBanner, migrateToastText, readAgg, writeAgg, SETTINGS_JSON } from "./js/core/server_storage.js";
+  import { t } from "./js/core/i18n.js";   // #89 T1a：迁移横幅等首屏文案取词
+  import { resolveEngineBase } from "./js/views/settings.js";
+  import { listProjects, listDeleted, load } from "./js/store/store.js";
+
+  initToast();
+
+  // 开发期引擎指向口（S1-2 里程碑①补验加）：localStorage["gui13.dev.base"] 覆盖 BASE_URL
+  // —— 空串=同源相对请求（反代/挂载形态）；S1-4 引擎挂载落地后此口可移除
+  // 2026-09-27 走查修复（老板真机实锤：引擎活着但「启动引擎」报 network_error）：
+  //   页面以 http(s) 打开（8940 反代 / 引擎挂载）= 同源形态，配置若指向跨域直连
+  //   （如 http://127.0.0.1:8190）浏览器 CORS 一律拦 → 探测恒 network_error——自动掰正为 ""。
+  // 地基批1档2 T2（账本 #45 GUI 侧）：本块逻辑逐字不动，另记「掰正后的有效值」devBaseEffective
+  //   （null = 本地无该键）供第二拍（引擎地址真值）复用。
+  let devBaseEffective = null;
+  try {
+    const devBase = localStorage.getItem("gui13.dev.base");
+    if (devBase !== null) {
+      const pageHttp = /^https?:$/.test(location.protocol);
+      const cross = pageHttp && devBase !== "" && new URL(devBase, location.href).origin !== location.origin;
+      if (cross) {
+        localStorage.setItem("gui13.dev.base", "");
+        setBase("");
+        devBaseEffective = "";
+      } else {
+        setBase(devBase);
+        devBaseEffective = devBase;
+      }
+    }
+  } catch (_e) { /* localStorage 不可用时忽略 */ }
+
+  // B004 接线：点击最近项目卡 / 项目管理页卡片 → 路由入项目工作区（默认 preview TAB · 行为基准 B004 口径）
+  // C3 修正笔：第二参 tab 可选（portal hero / projects 新建项目传 "setup" → 创建后进设定页对齐 v43）
+  const openProject = (projectId, tab) => {
+    const t = tab && tab !== "preview" ? `?tab=${encodeURIComponent(tab)}` : "?tab=preview";
+    window.location.hash = `#/project/${encodeURIComponent(projectId)}${t}`;
+  };
+  onOpenProjectPortal(openProject);
+  onOpenProjectProjects(openProject);
+
+  // 批 10-M M-T2：boot 数据时序（方案 §三.2 P3-2）——顶层 await 拉全量 + 总表对账，
+  //   **缓存未就绪不挂载**；拉取失败 = 只读降级（横幅提示 + 仍挂载·应用可用）。
+  //   双源过渡：读 server 优先 → localStorage 回退（store.js 收敛）；写仍 localStorage（M-T3 处理）。
+  const bootData = await bootDataStep({
+    localIds: [...new Set([...listProjects().map((p) => p.id), ...listDeleted().map((p) => p.id)])],
+    metaOf: (id) => { const p = load(id); return p ? { name: p.name, updatedAt: p.updatedAt } : {}; },
+  });
+  // 引擎地址单一真值（地基批1档2 T2 · 账本 #45 GUI 侧·第二拍·在 bootDataStep 返回之后）：
+  //   正规配置 engine_addr（data/settings.json·与服务侧 devserver 同一子键）落 BASE；
+  //   旧口 gui13.dev.base 非空仍最优先（第一拍掰正后的有效值·现状不变）。
+  //   跨源掰正同既有策略（引擎 Origin 校验+CORS）：http(s) 页面且引擎址跨源 → 走同源相对
+  //   （devserver FWD 按 engine_addr 转发·T1 每请求现读）；未设/非法 → base=null → 不调 setBase
+  //   （维持现状：http(s) 模块默认 ''·file:// 8190 兜底原样保留）。
+  //   一次性迁移：engine_addr 未设且旧口非空非跨源 → 采纳写入 + 清旧口键（旧口死灰复燃会夺权）。
+  //   boot 失败（ready=false）读不到 engine_addr → 同「未设」口径。
+  const engineAddr = readAgg(SETTINGS_JSON, "engine_addr");
+  const resolvedBase = resolveEngineBase({
+    devBase: devBaseEffective,
+    engineAddr,
+    ctx: { protocol: location.protocol, origin: location.origin },
+  });
+  if (resolvedBase.base !== null) setBase(resolvedBase.base);
+  if (resolvedBase.migrated) {
+    writeAgg(SETTINGS_JSON, "engine_addr", resolvedBase.base);
+    try { localStorage.removeItem("gui13.dev.base"); } catch (_e) { /* localStorage 不可用时忽略 */ }
+  }
+  window.__gui13DataReady = bootData.ready;   // 真机验证缝（M-T8）
+  // M-T6：迁移收尾——迁移失败=部分存量未上服务（数据服务本身可达）→ 专用横幅文案提示下次重试，
+  //   与只读降级横幅区分；成功且有实际上载 → toast 汇报（幂等轮空不弹）。
+  if (bootData.migrate && !bootData.migrate.ok) {
+    showOfflineBanner(document, t("shell.boot.migratePartial"));
+  } else if (bootData.banner) {
+    showOfflineBanner(document);
+  }
+  const migrateToast = bootData.migrate && bootData.migrate.ok ? migrateToastText(bootData.migrate.report) : null;
+  if (migrateToast) showToast("success", migrateToast);
+
+  // 应用壳接管 #app（内含左栏+主区+路由）
+  shellMount(document.getElementById("app"));
+
+  // 老板走查快批③（2026-09-27）：全局禁用浏览器原生右键菜单——应用态桌面感（PRD 口径：右键一律应用自定义菜单）
+  // 注册于各视图自定义 contextmenu 监听之后（模块顶层先执行），兜底 preventDefault 不影响已处理事件
+  // 体验修复 C-1：输入场景豁免（与 shell.js installContextmenuGuard 同口径 isEditableCtxTarget）——
+  //   恢复输入框/文本域/可编辑区内右键的原生粘贴、撤销菜单
+  document.addEventListener("contextmenu", (e) => {
+    if (isEditableCtxTarget(e && e.target)) return;
+    e.preventDefault();
+  });
+</script>
+</body>
+</html>

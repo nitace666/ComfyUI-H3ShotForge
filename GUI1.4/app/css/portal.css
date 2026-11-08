@@ -1,0 +1,93 @@
+/*
+ * GUI1.3 门户视图样式
+ * 源：v43 原型 style 门户段（md5=43c85f743cfb8445f63fb8292c3355aa）S1-1 T1 提取
+ *
+ * 提取范围（v43 行号 → 类名）：
+ *   :54    .portal-hero
+ *   :55    .portal-hero:hover
+ *   :56    .portal-hero .plus
+ *   :57    .sec-title
+ *   :58    .cards
+ *   :59    .qcard
+ *   :60    .qcard:hover
+ *   :61    .qcard .nm
+ *   :62    .recent-row
+ *   :63    .rcard
+ *   :64    .rcard:hover
+ *   :65    .rcard .thumb
+ *   :66    .rcard .thumb.pic
+ *   :67    .rcard .nm
+ *   :68    .rcard .dt
+ *   :69    .rcard.ghost
+ *   :592   .hero-sub
+ *   :593   .hero-sub a
+ *   :594   .hero-sub a:hover
+ *   :632   .portal-hero .cap
+ *
+ * 范围外（不搬）：
+ *   .runrow —— v43 :369-372 / :692-693，属项目工作区"运行记录行"，不在门户段；归 S1-2 实装段。
+ *
+ * 命名纪律：保留 v43 类名原样，不二次缩写；新模块如 .qi/.ip-* 在末尾追加，不污染 v43 块。
+ * 不动 theme.css（任务单边界）：门户类样式全在本文件。
+ * 逐字比对由 S1-1 T1 验收脚本执行（grep 抽 8 条规则与 v43 原文 diff）。
+ */
+
+/* ===== 门户首页（v43 :54-69） ===== */
+/* v43 :54 .portal-hero */
+.portal-hero{border:2px dashed #33363d;border-radius:14px;height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;color:var(--txt2);background:radial-gradient(#191b1f 1px,transparent 1px);background-size:18px 18px}
+/* v43 :55 .portal-hero:hover */
+.portal-hero:hover{border-color:var(--accent-bright);color:var(--txt)}
+/* v43 :56 .portal-hero .plus */
+.portal-hero .plus{width:56px;height:56px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--txt)}
+/* v43 :57 .sec-title */
+.sec-title{margin:32px 0 12px;color:var(--txt3);font-size:12px;letter-spacing:2px}
+/* v43 :58 .cards */
+.cards{display:flex;gap:14px;flex-wrap:wrap}
+/* v43 :59 .qcard */
+.qcard{width:120px;height:84px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;color:var(--txt2)}
+/* v43 :60 .qcard:hover */
+.qcard:hover{background:#24272d;color:var(--txt);border-color:#33363d}
+/* v43 :61 .qcard .nm */
+.qcard .nm{font-size:12px}
+/* v43 :62 .recent-row */
+.recent-row{display:flex;gap:14px;overflow:hidden}
+/* v43 :63 .rcard */
+.rcard{width:200px;height:88px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:10px;cursor:pointer;flex-shrink:0}
+/* v43 :64 .rcard:hover */
+.rcard:hover{background:#24272d}
+/* v43 :65 .rcard .thumb */
+.rcard .thumb{width:64px;height:64px;border-radius:8px;background:#111317;display:flex;align-items:center;justify-content:center;color:#3a4048;flex-shrink:0;overflow:hidden}
+/* v43 :66 .rcard .thumb.pic */
+.rcard .thumb.pic{background:linear-gradient(180deg,#7db4d8 0%,#cfe3ee 55%,#e8d9b8 56%,#d8c9a4 100%);color:transparent}
+/* v43 :67 .rcard .nm */
+.rcard .nm{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
+/* v43 :68 .rcard .dt */
+.rcard .dt{font-size:12px;color:var(--txt2);margin-top:4px}
+/* v43 :69 .rcard.ghost */
+.rcard.ghost{opacity:.45;width:60px}
+
+/* ===== 门户 hero 子链接（v43 :592-594） ===== */
+/* v43 :592 .hero-sub */
+.hero-sub{display:flex;gap:18px;margin-top:14px;font-size:12px;color:var(--txt3);flex-wrap:wrap}
+/* v43 :593 .hero-sub a */
+.hero-sub a{color:var(--txt2);cursor:pointer;text-decoration:none;display:inline-flex;gap:5px;align-items:center}
+/* v43 :594 .hero-sub a:hover */
+.hero-sub a:hover{color:var(--accent-bright)}
+
+/* ===== 门户 hero cap（v43 :632） ===== */
+/* v43 :632 .portal-hero .cap */
+.portal-hero .cap{max-width:640px;text-align:center;font-size:12px;color:var(--txt3);line-height:1.6;padding:0 16px}
+
+/* ===== 新增（非 v43 · 模块化所需） =====
+ * 说明：portal.js 为 5 卡图标位补了 .qi；为新建项目弹窗补了 .ip-* 包装；皆最小样式，
+ * 不污染 v43 段块。
+ */
+.qcard .qi{font-size:18px;color:var(--accent-bright);line-height:1}
+.rcard .thumb{font-size:18px;color:var(--txt3)}
+.rcard.ghost .thumb{font-size:20px;color:var(--txt3)}
+/* 新建项目弹窗（沿用 .mbox 范式，theme.css 已含；此处仅补轻量微调） */
+.mbox-wrap{font-family:inherit}
+.mbox input.ip-name{width:100%;margin:8px 0 6px;padding:7px 9px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);font-size:13px;outline:none;font-family:inherit}
+.mbox input.ip-name:focus{border-color:var(--accent-bright)}
+.mbox .ip-hint{font-size:12px;color:var(--bad);min-height:14px;margin-bottom:4px}
+.mbox .ip-ok{padding:7px 16px;border:0;cursor:pointer}

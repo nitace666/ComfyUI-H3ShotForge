@@ -1,0 +1,164 @@
+/*
+ * GUI1.3 段卡区 CSS
+ * 源：v43 原型（md5=43c85f743cfb8445f63fb8292c3355aa）style 块（S1-2 T3 提取）
+ *
+ * 提取范围（段卡区全量 · 12 字段六列 · 种子双向 · 拖拽 · 徽标）：
+ *   - .segcard + .segcard:hover + .segcard.fold + .segcard.selcard    卡片容器（v43 :466-468/:449）
+ *   - .sc-head / .sc-head .no / .sc-head .sc-drag / .sc-del            卡片头+拖拽+删除（v43 :469-473）
+ *   - .sc-fold                                                        折叠箭头（v43 :450）
+ *   - .sc-prompt / .sc-meta / .sc-meta input / .sc-meta .mini         textarea 与 meta 行（v43 :474-479/:982/:989）
+ *   - .sc-meta .mode-note                                             分镜模式说明小字（v43 :731）
+ *   - .sc-adv-t + :hover + .open                                       高级折叠条（v43 :481-490）
+ *   - .sc-adv + .sc-adv.show + .sc-procs                              高级区壳+sc-procs 行（v43 :492-501/:872-878）
+ *   - .sc-grid + .sc-grid .fld + .fld>label                            12 字段六列网格（v43 :495-504）
+ *   - .sc-fl + label + select                                          首帧概念图下拉行（S3-2 T8 新增·仓内自制·v43 无对应段）
+ *   - .sc-procs + .sc-procs label + .sc-sr-mode                       段级后处理勾选+SR 模式切换（v43 :872-878）
+ *   - .badge.b-first / .b-mid / .b-last                              分段模式徽标三色（v43 :282-284）
+ *   - .st-ok / .st-bad / .st-wait                                     状态徽章三色（v43 :287-289）
+ *   - .addshot                                                        加一段按钮（v43 :190-191）
+ *   - body.bigui .sc-prompt / .sc-meta / .sc-adv-t                    大字号档（v43 :490/:982/:989）
+ *
+ * 范围外（归 T5/其它批提取）：
+ *   - .pv-bar / .pv-pre / .refchips 预览拼装容器 → 容器已渲染，正文归 T5
+ *   - .selcard 选中态高亮（R6 起已挂选中：点段卡 / 资产拖放 / 首挂回落均写选中，rerender 同步类）
+ *   - .segcard.fold 折叠隐藏规则本批保留 → 单卡折叠 segFold 用得上
+ */
+
+/* ===== 段卡容器 ===== */
+.segcard{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:12px 14px;margin-bottom:10px}
+.segcard:hover{border-color:#33363d}
+.segcard.selcard{border-color:var(--accent-bright);background:#141b21}
+/* v10/v37：整卡折叠 segFold 隐藏非头元素（保留单卡折叠能力） */
+.segcard.fold .sc-prompt,.segcard.fold .sc-meta,.segcard.fold .sc-adv-t,.segcard.fold .sc-adv{display:none!important}
+.segcard.fold{padding:8px 14px}
+
+/* ===== 卡片头（段号/徽标/状态/拖拽/折叠/删除）===== */
+.sc-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.sc-head .no{color:var(--accent-bright);font-weight:600}
+.sc-head .sc-drag{color:var(--txt3);cursor:grab;letter-spacing:2px}
+.sc-del{margin-left:auto;color:var(--txt3);cursor:pointer;padding:0 4px}
+.sc-del:hover{color:var(--bad)}
+.sc-fold{color:var(--txt3);cursor:pointer;font-size:12px}
+
+/* ===== 分段模式徽标（b-first/b-mid/b-last 三色）===== */
+.badge.b-first{color:#7ec9ff;border-color:#2b5d8a;background:#14202e}
+.badge.b-mid{color:#cfe0f2;border-color:#3a4654;background:var(--panel2)}
+.badge.b-last{color:#ffd76a;border-color:#7a5b2b;background:#221c10}
+
+/* ===== 状态徽章（st-ok/st-bad/st-wait）===== */
+.st-ok{font-size:12px;color:var(--ok);flex-shrink:0;white-space:nowrap}
+.st-bad{font-size:12px;color:var(--bad);flex-shrink:0;white-space:nowrap}
+.st-wait{font-size:12px;color:var(--txt2);flex-shrink:0;white-space:nowrap}
+
+/* ===== 提示词 textarea + sc-meta 行 ===== */
+.sc-prompt{min-height:56px;cursor:text}
+.sc-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--txt2);margin-top:8px}
+/* E块体验修复：meta 行控件统一 24px 高（GM 实测 15~25px 高低不齐）——input 固定高、mini 胶囊 inline-flex 同高垂直居中 */
+.sc-meta input[type=number],.sc-meta input[type=text]{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:3px 6px;color:var(--txt);font-size:12px;outline:none;box-sizing:border-box;height:24px}
+.sc-meta input[type=number]{width:52px}
+.sc-meta .mini{font-size:12px;color:var(--txt2);cursor:pointer;border:1px solid var(--line);border-radius:8px;padding:3px 8px;box-sizing:border-box;min-height:24px;display:inline-flex;align-items:center;line-height:16px}
+.sc-meta .mini:hover{color:var(--txt);border-color:var(--accent-bright)}
+.sc-meta .mode-note{font-size:11px;color:var(--txt3);margin-top:4px;display:block;flex-basis:100%}
+
+/* ===== 高级折叠条（v38 醒目折叠条）===== */
+.sc-adv-t{display:flex;align-items:center;gap:6px;margin-top:8px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#1b1e23;font-size:12px;color:var(--txt2);cursor:pointer;user-select:none}
+.sc-adv-t:hover{background:#22262c;border-color:#3a3e46;color:var(--txt)}
+.sc-adv-t .adv-ico,.sc-adv-t .arr{display:inline-flex;flex-shrink:0}
+.sc-adv-t .adv-ico{color:var(--accent-bright)}
+.sc-adv-t b{font-weight:600;color:var(--txt);letter-spacing:.5px}
+.sc-adv-t .inh{flex:1;min-width:0}
+.sc-adv-t .arr{color:var(--txt3);transition:transform .15s}
+.sc-adv-t.open{background:#18262b;border-color:var(--accent-deep);color:var(--txt)}
+.sc-adv-t.open .arr{transform:rotate(180deg);color:var(--accent-bright)}
+body.bigui .sc-adv-t{font-size:13px}
+
+/* ===== 高级区壳 + 网格化 + 前置勾选行（v31 W5）===== */
+.sc-adv{display:none;margin:0 0 8px;border:1px dashed #2a2e35;border-radius:12px;padding:10px;background:#1012161a}
+.sc-adv.show{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px 10px}
+/* v39：六列下标签置顶 */
+.sc-adv.show .sc-grid .fld{flex-direction:column;align-items:stretch;gap:3px}
+.sc-adv.show .sc-grid .fld>label{width:auto}
+/* v39：窄窗回退——六列在 <1211px 放不下，回退四列；<1001px 再回退三列 */
+@media (max-width:1210px){ .sc-adv.show{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (max-width:1000px){ .sc-adv.show{grid-template-columns:repeat(3,minmax(0,1fr))} }
+.sc-adv.show .sc-grid{display:contents}
+/* sc-procs 整行（高级区第 1 行 · 勾选 + SR 切换） */
+.sc-adv .sc-procs{grid-column:1/-1;display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding-bottom:6px;border-bottom:1px dashed #2a2e35;margin-bottom:2px}
+
+/* ===== 12 字段六列网格 ===== */
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px}
+.sc-grid .fld{margin-bottom:6px}
+.sc-grid .fld>label{width:58px;font-size:12px}
+
+/* ===== S3-2 T8: 首帧概念图下拉行（sc-fl · 仅 FL 辅助段渲染 · 整行跨六列）===== */
+.sc-adv .sc-fl{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:12px;padding:2px 0 4px}
+.sc-adv .sc-fl>label{color:var(--txt2);flex-shrink:0}
+.sc-adv .sc-fl>select{flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:5px 8px;color:var(--txt);font-size:12px;outline:none;font-family:inherit}
+.sc-adv .sc-fl>select:focus{border-color:var(--accent-bright)}
+
+/* ===== #79 拍摄控制紧凑条（meta 行 mini 入口 .sc-cam-t + 行后展开容器 .sc-cam）===== */
+.sc-cam-t{display:inline-flex;align-items:center;gap:6px;max-width:100%}
+.sc-cam-t .sc-cam-sum{font-size:11px;color:var(--txt2);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}/* G4b④：220→280，「拍摄控制 · 」前缀约占 56px·摘要本体预算不减 */
+.sc-cam-t .sc-cam-badges{display:inline-flex;align-items:center;gap:3px}
+.sc-cam-t .sc-cam-badge{width:20px;height:20px;object-fit:cover;border-radius:4px;border:1px solid var(--line);background:#111}
+.sc-cam-t .sc-cam-none{font-size:12px;color:var(--txt2)}
+.sc-cam-t.open{border-color:var(--accent-bright);color:var(--txt)}
+.sc-cam{display:none;margin:0 0 8px;border:1px solid var(--line);border-radius:10px;padding:10px;background:#1012161a}
+.sc-cam.show{display:block}
+.sc-cam .sc-lens{margin:0 0 8px}
+/* E块体验修复：镜头九项下拉统一高度与字号——后代选择器九列全命中
+   （方向列下拉嵌 .sc-dir-row 行容器内·fld 直接子选择器命中不了·审核整改笔修正） */
+.sc-cam .sc-lens select{min-height:28px;font-size:12px;font-family:inherit}
+/* 方向列：select 占行内主宽（flex:1·图标钮恒在右） */
+.sc-cam .sc-lens .sc-dir-row>select{flex:1;min-width:0}
+.sc-cam-cap{display:block;font-size:11px;color:var(--txt3);margin:6px 0 4px}
+.sc-cam-hint{font-size:11px;color:var(--txt3)}
+.sc-cam-ref{display:flex;align-items:center;gap:8px;padding:3px 0}
+.sc-cam-thumb{width:56px;height:32px;object-fit:cover;border-radius:6px;border:1px solid var(--line);cursor:pointer;background:#111}
+.sc-cam-video{width:240px;max-width:100%;height:auto}
+.sc-cam-refname{flex:1;min-width:0;font-size:12px;color:var(--txt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc-cam-del{cursor:pointer;color:var(--txt3);padding:0 4px}
+.sc-cam-del:hover{color:var(--bad)}
+.sc-cam-add{display:inline-block;font-size:11px;color:var(--txt2);cursor:pointer;border:1px solid var(--line);border-radius:8px;padding:2px 8px;margin-top:4px}
+.sc-cam-add:hover{color:var(--txt);border-color:var(--accent-bright)}
+.sc-cam-src{display:flex;align-items:center;gap:8px;margin-top:8px}
+.sc-cam-src .sc-cam-cap{margin:0}
+.sc-cam-src-sel{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:4px 8px;color:var(--txt);font-size:12px;outline:none;font-family:inherit}
+.sc-cam-src-sel:focus{border-color:var(--accent-bright)}
+
+/* ===== 段级后处理勾选行（sc-procs · 独立定义覆盖上方限定符版）===== */
+.sc-procs{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:8px 0 4px;font-size:12px;color:var(--txt2);padding:6px 0;border-top:1px dashed #2a2e35;border-bottom:1px dashed #2a2e35}
+.sc-procs label{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.sc-procs label input{accent-color:var(--accent)}
+.sc-procs .sc-sr-mode{font-size:12px;color:var(--txt3);border:1px solid var(--line);border-radius:8px;padding:2px 8px;background:var(--panel2);cursor:pointer}
+.sc-procs .sc-sr-mode:hover{color:var(--txt2);border-color:#ffd76a}
+.sc-procs .sc-sr-mode.on{color:#ffd76a;border-color:#7a5b2b;background:#221c10}
+.sc-procs .proc-hint{font-size:12px;color:var(--txt3);margin-left:auto}
+
+/* ===== 加一段按钮（v43 :190-191）===== */
+.addshot{border:1px dashed #33363d;border-radius:8px;padding:8px;text-align:center;color:var(--txt2);cursor:pointer}
+.addshot:hover{color:var(--txt);border-color:var(--accent-bright)}
+
+/* ===== 大字号档（v9/v37）===== */
+body.bigui .sc-prompt{font-size:14px}
+body.bigui .sc-meta{font-size:13px}
+
+/* ===== B5-T6 G6：分镜卡墙（表/卡墙切换的卡墙网格 · 只读浏览态）===== */
+/* cf-cap 行内切换 chip：覆写 assets.css 的块级 .fchips 版式（.fchip 本体在 theme.css） */
+.cf-cap .fchips{display:inline-flex;gap:6px;margin:0}
+/* 作用域限定 .segcards-view：edit.css 的监控抽屉 .segwall（body 级）不受波及 */
+.segcards-view .segwall{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:2px 0 6px}
+.segcards-view .segwall .wallcard{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}
+.segcards-view .segwall .wallcard:hover{border-color:#33363d}
+.wallthumb{height:112px;background:var(--panel2);position:relative}
+.wallthumb.empty{background:#23262c}
+.wallbadge{position:absolute;top:6px;right:6px;background:#16181be6;border-radius:8px;padding:1px 6px;font-size:11px}
+.wallhead{display:flex;align-items:center;gap:6px;padding:6px 10px 0}
+.wallhead .no{color:var(--accent-bright);font-weight:600;font-size:12px}
+.wallsnip{padding:4px 10px 10px;font-size:12px;color:var(--txt2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ===== T3 增设：段卡视图外壳 ===== */
+.segcards-view{padding:0}
+/* 走查反馈⑥：画布双击段节点 → 设定页定位段卡的高亮闪烁（画布→段卡跨视图导航反馈） */
+.segcard.goto-flash{border-color:var(--accent-bright);box-shadow:0 0 0 3px rgba(84,196,255,.22);animation:gotoFlash 2.2s ease}
+@keyframes gotoFlash{0%,60%{box-shadow:0 0 0 3px rgba(84,196,255,.35)}100%{box-shadow:none}}

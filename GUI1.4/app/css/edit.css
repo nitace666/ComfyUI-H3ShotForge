@@ -1,0 +1,223 @@
+/* GUI 1.3 剪辑 TAB 样式 (S1-3 T3/T4) — 自 v43 原型 :199-250/:596-616/:1000-1020 转正提取.
+   出处: GUI1.1 布局示意 v43
+   v43 本体永不修改; 类名与 v43 一致 (全站无冲突, theme.css bigui .clip 字号适配继续生效). */
+
+/* ===== 播放器 (D026) + 大小手柄 (D027·v36 包3) =====
+   R1 ④ A06/B05（v43 :756 `#pv-edit .player` 等价覆写）：min-height 160px + resize:vertical + overflow:hidden
+   批E T11 R-17：max-height:62vh 与预览页 #pv-preview .player 同口径（shell.css F54 影院模式量级·防长视频撑超高盒）
+   video object-fit:contain = replaced 元素 letterbox 默认行为显式化（等效·纯保险） */
+.edit-player{flex:1;min-height:160px;max-height:62vh;resize:vertical;background:var(--playerbg);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--txt2);position:relative;overflow:hidden}
+.edit-player video{max-width:100%;max-height:100%;min-width:0;min-height:0;object-fit:contain;outline:none}
+/* 走查反馈 F3：导出成片（主按钮）/载入历史（ghost）自工具条迁播放器区右上 */
+.edit-player .pv-actions{position:absolute;top:8px;right:10px;display:flex;align-items:center;gap:8px;z-index:3}
+.edit-player .pv-actions .ghostbtn{font-size:12px;padding:4px 10px}
+.edit-player .pv-actions .prim{font-size:12px;padding:5px 14px}
+/* 走查反馈 F6：时间线片段多帧胶片底（.clipfilm 格条铺底·每帧 cover 居中·格间细分隔像胶片；
+   成功填充挂 .hasfilm → 文字切白字黑影保证任意画面上可读；失败回退 .done 渐变底原深蓝字） */
+.clip .clipfilm{position:absolute;inset:0;display:flex;overflow:hidden;pointer-events:none}
+.clip .clipfilm i{flex:1;min-width:0;background-size:cover;background-position:center;border-right:1px solid #0007}
+.clip .clipfilm i:last-child{border-right:none}
+.clip .cap{position:relative;z-index:1}
+.clip.hasfilm .cap{color:#fff;text-shadow:0 0 3px #000d,0 1px 2px #000d}
+/* 走查反馈 F23: 关键帧 ◆ 菱形常显于片段下缘（源时间点比例定位·点击删除） */
+.clip .kf-dot{position:absolute;bottom:3px;width:8px;height:8px;background:var(--accent-bright);border:1px solid #fff9;transform:rotate(45deg) translateX(-50%);cursor:pointer;z-index:2}
+.edit-player .pv-play,.edit-player .pv-pause{color:var(--txt);cursor:pointer;display:flex}
+.edit-player .pv-play:hover{color:var(--accent-bright)}
+.edit-player .pv-pause{display:none;position:relative;width:30px;height:34px}
+.edit-player .pv-pause::before,.edit-player .pv-pause::after{content:'';position:absolute;top:0;bottom:0;width:9px;background:currentColor;border-radius:2px}
+.edit-player .pv-pause::before{left:3px}
+.edit-player .pv-pause::after{right:3px}
+.edit-player.playing .pv-play{display:none}
+.edit-player.playing .pv-pause{display:inline-block}
+/* 批 M3 T2 · R-43 自绘全片进度条行（原生 controls 于 T3 隐藏·进度条改自绘·口径=全片 phTime/filmEndSec）。
+   热区≥14px：轨道视觉 4px + 透明 ::before 上下各撑 5px（真机命中区 14px·细轨道也好点中）·
+   hover 游标放大（拖动前即可见落点）。游标点用 translateX(-50%) 居中于进度位置。 */
+/* 插播修复（老板 2026-10-09「播放进度条错位叠在画面中央」）：video=absolute 铺满容器（F91a 双 video 换位不变量），
+   pv-bar-row 走常规流会成为容器唯一流内子元素被 justify-content:center 垂直居中在画面中央（实测 rowInPlayerPct=44%）——
+   改 absolute 贴底（与 .pv-actions absolute 同款模式·z-index:3 压在画面上可交互） */
+/* 插播修复（老板 2026-10-09「进度条在底部但依然和播放画面重合 因为画面也在底部」）：
+   video 是 JS 内联 absolute 铺满（F91a 双 video 换位不变量·mk() 工厂与 preview 共用不能改 JS）——
+   !important 覆写内联 height 让出底部 26px 控制条区（仅 .edit-player 作用域·preview 概况页零影响） */
+.edit-player video{height:calc(100% - 26px) !important}
+.edit-player .pv-bar-row{display:flex;align-items:center;gap:10px;position:absolute;left:14px;right:14px;bottom:6px;z-index:3}
+.edit-player .pv-scrub{position:relative;flex:1;height:4px;background:var(--line);border-radius:4px;cursor:pointer}
+.edit-player .pv-scrub::before{content:'';position:absolute;left:0;right:0;top:-5px;bottom:-5px}
+.edit-player .pv-knob{position:absolute;top:50%;left:0;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--accent-bright);transition:transform .12s}
+.edit-player .pv-scrub:hover .pv-knob{transform:scale(1.35)}
+.edit-player .pv-time{font-size:11px;color:var(--txt2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.split-pv{height:6px;flex-shrink:0;cursor:row-resize;margin:8px 0;border-radius:6px;border-top:1px solid var(--line);background:var(--panel2)}
+.split-pv:hover,.split-pv.on{background:var(--accent-bright);border-top-color:var(--accent-bright)}
+
+/* ===== 时间线容器 ===== */
+.timeline{background:#0d0f12;border:1px solid var(--line);border-radius:12px;padding:12px;overflow:auto;min-height:220px;display:flex;flex-direction:column}
+.timeline .edit-title{flex-shrink:0;font-size:12px;color:var(--txt2);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.timeline .edit-title .hint-main{flex:1;min-width:260px}
+.zoomctl{display:flex;align-items:center;gap:6px}
+.zbtn{border:1px solid var(--line);border-radius:8px;padding:1px 8px;cursor:pointer;color:var(--txt2);font-size:12px;user-select:none}
+.zbtn:hover{color:var(--txt);border-color:var(--accent-bright)}
+#zoomRange{width:120px;accent-color:var(--accent)}
+#zoomPct{display:inline-block;width:44px;text-align:right}
+
+/* ===== 轨道区 ===== */
+.tl-scroll{overflow-x:auto;padding-bottom:4px;flex:1;min-height:0}
+.ruler{height:26px;position:relative;background:#0b0d10;border:1px solid var(--line);border-radius:8px;margin:0 0 2px 132px;cursor:ew-resize;min-width:max-content}
+.ruler .tick{position:absolute;top:16px;bottom:0;width:1px;background:#262a33}
+.ruler .tick.M{top:12px;background:#39404b}
+.ruler .tick.M b{position:absolute;top:1px;left:4px;font-size:12px;color:var(--txt3);font-weight:400;font-variant-numeric:tabular-nums}
+.tl-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.tl-lab{width:124px;display:flex;align-items:center;gap:4px;font-size:12px;color:var(--txt2);flex-shrink:0}
+.tl-track{flex:1;display:flex;gap:0;height:36px;align-items:stretch;background:#0b0d10;border:1px solid var(--line);border-radius:8px;position:relative;overflow:visible}
+#mainTrack{height:96px}
+/* 批5-R53-TC：备选轨 = 动态多轨（[data-track="alt-N"]·按需生成）——高度规则随行选择器迁移 */
+.tl-row[data-track^="alt-"] .tl-track{height:60px}
+#audioTrack{height:28px}
+/* 批 J-P4：BGM 轨（与分离音频轨同款高度·一轨两 lane） */
+#bgmTrack{height:28px}
+
+/* 轨道静音 (v42 件1·D017/D018) */
+.mbtn{margin-left:auto;width:16px;height:16px;line-height:14px;text-align:center;border:1px solid var(--line);border-radius:5px;font-size:10px;color:var(--txt3);cursor:pointer;flex-shrink:0;background:var(--panel2)}
+.mbtn:hover{color:var(--txt);border-color:var(--accent-bright)}
+.mbtn.on{color:#eafcff;background:var(--accent);border-color:var(--accent)}
+.tl-track.muted .clip,.tl-track.muted .clip-audio{opacity:.55}
+
+/* 轨道锁定 / 隐藏 (S3-2 T1) — 三钮同排, 形态复用 .mbtn; 头列宽 124px 与 ruler 左缘 132px 对齐
+   （批 J-P4 加宽：音频一轨两行后「分离音频轨 / BGM 轨」标签 + 三钮在 96px 头列内折行） */
+.tbtns{margin-left:auto;display:flex;align-items:center;gap:2px;flex-shrink:0}
+.tbtns .mbtn{margin-left:0}
+.mbtn.ico{font-size:9px;line-height:16px;display:inline-flex;align-items:center;justify-content:center}
+
+/* ===== 片段 ===== */
+.clip{display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;font-weight:600;overflow:hidden;white-space:nowrap;position:relative;border-radius:0;border-right:1px solid var(--bg);user-select:none}
+/* 批5-R53-TE 换序动画（剪映式观感·工程裁量记档：left/transform transition·弃 FLIP）：
+   位变片段挂 .tl-anim + JS 设初始 translateX(旧位−新位)，双 rAF 归零 → 滑向终位。
+   transform 布局中性 → offsetLeft 恒终位，拖拽落点判定（insertionIndex/computeSnap）不被动画中间态污染。
+   时长 .18s = 仓内 micro-transition 惯例量级（pv-knob .12s / mon-drawer .18s·交互动画不拖慢首帧）；
+   仓无 prefers-reduced-motion 先例（grep 零命中）→ 不加（记档）。 */
+.tl-anim{transition:transform .18s}
+.tl-track .clip:last-child{border-right:none}
+.clip.done{background-image:linear-gradient(180deg,#79b3d8,#cfe3ee 55%,#e8d9b8 56%,#d8c9a4);color:#12303f;font-weight:600;text-shadow:0 1px 2px #ffffff55}
+.clip.warn{background:#8a6d2f;color:#f7ecd2}
+/* 批 J-P7 B2（老板建议 13）播放态高亮：描边 3px + accent 内嵌环 + 轻微提亮。
+   内嵌环用 inset box-shadow 叠色，兼容 .done 渐变底与 .empty/.warn 纯色底。
+   批M2 R-40 拆分：本行只剩播放态 .active（sel 信号下行独占·代码层从不挂 .clip-audio active）。 */
+.clip.active{outline:3px solid var(--accent-bright);outline-offset:-3px;filter:brightness(1.14);box-shadow:inset 0 0 0 2px var(--accent-bright)}
+.clip.empty{background:#23262c;color:var(--txt2);font-weight:400}
+.clip.pending{outline:2px dashed var(--warn);outline-offset:2px}
+/* 批M2 R-40 选中态独占信号（拆分自上行原四选择器）：置于 .active/.pending 之后——
+   文件序胜出，同时压过 pending 虚线竞争与 active 青环（both-态黄环胜·选中是显式动作）。
+   外描边 offset:1px 描在片段外（暗轨底 #0b0d10 高对比）+内白环；不设 filter（both-态保留 active 提亮）。 */
+.clip.sel,.clip-audio.sel{outline:3px solid var(--warn);outline-offset:1px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.55)}
+.clip.cand{background:#12414a;border:1px solid var(--accent-bright);color:#cfeef2}
+.clip.cand .cok{color:var(--ok);margin-left:10px;cursor:pointer}
+.clip.cand .cno{color:var(--bad);margin-left:8px;cursor:pointer}
+.clip.retired{background:#23262c;color:#7a8494;font-weight:400}
+/* R53域重对齐-T4（P4）渲染中灰占位块: running 重跑/精修行的段级占位（几何 left/width/height 由
+   renderTracks 写内联·maxGen+1 代际轨）——灰底虚线描边+「渲染中…」。非 .clip 类：拖拽/双击预览/
+   框选/裁决钮/落点计数天然不认；纯 DOM 态不进 altClips，行 running 清除后重渲即消失 */
+.clip-rendering{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--txt2);background:#23262c;border:1px dashed var(--txt3);user-select:none;overflow:hidden;white-space:nowrap}
+/* R53域批 #21③ 备选轨 ▶ 播放钮 hover 显形（常显在多块并排时同屏多枚 ▶·治老板复验「两个播放按钮」）。
+   同 .trans-btn 先例（:opacity+hover）；无 hover 环境兜底恒显（@media hover:none·触屏不丢播放入口）。 */
+.clip .cplay{opacity:0;transition:opacity .12s}
+.clip:hover .cplay{opacity:1}
+@media (hover:none){.clip .cplay{opacity:1}}
+/* B5-T4 C2：段状态左边条四色（legacy components.css:502-505 同构；.done/.warn 底色零变化）
+   green=成功 / yellow=渲染中 / red=失败·作废 / gray=无状态（旧档兜底）
+   排除备选轨 cand/retired（自带一体边框·避免半截 4px 左边条） */
+.clip[data-shot-color="green"]:not(.cand):not(.retired){border-left:4px solid var(--ok)}
+.clip[data-shot-color="yellow"]:not(.cand):not(.retired){border-left:4px solid var(--warn)}
+.clip[data-shot-color="red"]:not(.cand):not(.retired){border-left:4px solid var(--bad)}
+.clip[data-shot-color="gray"]:not(.cand):not(.retired){border-left:4px solid var(--txt3)}
+.clip .dur{opacity:.9;font-weight:400;margin-left:2px}
+/* 变速角标 (S3-3 T2) — 片段名旁 speed≠1 时显示; 宽度/时间线几何仍按原 dur（定案②） */
+.clip .spd{margin-left:4px;font-size:10px;font-weight:600;line-height:1.5;border-radius:6px;padding:0 4px;background:#3a2c10;color:#ffe7a3;border:1px solid #9a7028;flex-shrink:0}
+/* 倒放 ⟲ / 定格 ⏸ / 分离音视频 🔇 角标 (S3-3 T3/T4) — 同 .spd 同款形态; 只标注不参与片段几何。
+   版本 ver 角标 .vr（R53域重对齐-T4·原版/第N次重制·徽章退役后版本区分靠它）同款形态 */
+.clip .rev,.clip .frz,.clip .avs,.clip .vr{margin-left:4px;font-size:10px;font-weight:600;line-height:1.5;border-radius:6px;padding:0 4px;background:#3a2c10;color:#ffe7a3;border:1px solid #9a7028;flex-shrink:0}
+/* 音量条 (S3-3 T5) — 片段下缘内嵌高度条（高度 = volume 百分比·volume<1 才渲染）; 纯视觉不参与几何 */
+.clip .vbar,.clip-audio .vbar{position:absolute;left:0;bottom:0;width:100%;background:var(--accent-bright);opacity:.45;pointer-events:none}
+/* 淡化渐变条 (S3-3 T9) — 片段下缘: 左条 = 淡入（左浓右透）/ 右条 = 淡出（右浓左透）;
+   条宽 = 淡化秒数 ÷ 片段时长（行内 width·值>0 才挂）; 纯视觉不参与片段几何 */
+.clip .fbar,.clip-audio .fbar{position:absolute;bottom:0;height:4px;opacity:.55;pointer-events:none;z-index:1}
+.clip .fbar.in,.clip-audio .fbar.in{left:0;background:linear-gradient(90deg,var(--accent-bright),transparent)}
+.clip .fbar.out,.clip-audio .fbar.out{right:0;background:linear-gradient(270deg,var(--accent-bright),transparent)}
+/* 交界转场标记 (S3-3 T7) — 正片轨相邻片段交界窄标记: 绝对定位（不参与片段流几何·x = 前段累积末端）;
+   未设 = hover 出「+转场」, 已设 = 「⇄类型」常显; 点击开转场弹窗 */
+.trans-btn{position:absolute;top:2px;transform:translateX(-50%);z-index:5;display:inline-flex;align-items:center;height:16px;padding:0 5px;border-radius:8px;border:1px solid var(--line);background:#0b0d10e6;color:var(--txt2);font-size:10px;font-weight:600;line-height:1;cursor:pointer;white-space:nowrap;opacity:0;user-select:none}
+.tl-track:hover .trans-btn{opacity:.6}
+.tl-track:hover .trans-btn:hover{opacity:1;color:var(--txt);border-color:var(--accent-bright)}
+.trans-btn.on,.tl-track:hover .trans-btn.on{opacity:1;background:#3a2c10;color:#ffe7a3;border-color:#9a7028}
+.clip-audio{background:#283448;color:#cfe0f2;border-radius:8px;height:100%;display:flex;align-items:center;padding-left:8px;font-size:12px;user-select:none;position:relative}
+/* 批 J-P4：锚定半（splitAV 音频半·主轨存在同 segId 段）按父段轴窗绝对落位——left/宽由 renderTracks
+   写内联（与预听 audioWindowAt / 导出组装器同几何口径）：老板「分离后初始位置要和对应视频对齐」。
+   批1-T7（F-111）：轴条（无父段锚定者·含 BGM）按自身轴窗同样绝对落位 —— 原走 flex 流内，
+   脱锚条（同轨他条皆脱流时成唯一流内子元素）会落 left:0+marginLeft=轨道最左，即老板报的
+   「分离音频调整后位置闪现到轨道左」。两类定位几何同坐标系，故合一条规则。 */
+.clip-audio.anchored,.clip-audio.axpos{position:absolute;top:0}
+.clip.dragging{opacity:.35}
+.tl-track.drop-hint{outline:1px dashed var(--accent-bright);outline-offset:3px}
+.phint{font-size:12px;color:var(--txt3);padding-left:4px;align-self:center}
+.snap-line{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--accent-bright);box-shadow:0 0 6px #38b6c488;z-index:5;pointer-events:none;display:none}
+/* 框选 overlay (批 I-P2 T10 F-10) — fixed 挂 body·client 坐标（与事件/段体 rect 同坐标系）; pointer-events:none 不挡交互 */
+.marquee-box{position:fixed;z-index:60;border:1px solid var(--accent-bright);background:#38b6c426;pointer-events:none}
+
+/* 修剪手柄 (v42 件6: 10px 内 3px 白条 3.5px 居中·D023) */
+.hnd{position:absolute;top:0;bottom:0;width:10px;cursor:ew-resize;z-index:4;display:none;background:linear-gradient(90deg,#ffffff30,#ffffff00)}
+.hnd.L{left:0}
+.hnd.R{right:0;background:linear-gradient(270deg,#ffffff30,#ffffff00)}
+.hnd::after{content:'';position:absolute;top:30%;bottom:30%;width:3px;border-radius:8px;background:#ffffffd9;left:3.5px}
+.hnd.R::after{left:auto;right:3.5px}
+.clip:hover .hnd{display:block}
+/* 批F F-T3 (F-11): 音频轨片段同挂修剪手柄——显形规则对齐主轨（.clip-audio 不命中 .clip） */
+.clip-audio:hover .hnd{display:block}
+
+/* 游标 */
+.playhead{position:absolute;top:-34px;bottom:-4px;width:2px;background:#ff5d5d;z-index:6;pointer-events:none;box-shadow:0 0 6px #ff5d5d88}
+.ph-head{position:absolute;top:2px;left:-16px;width:32px;height:18px;border-radius:8px 8px 0 0;color:#fff;font-size:12px;line-height:18px;text-align:center;cursor:ew-resize;pointer-events:auto;z-index:7;font-variant-numeric:tabular-nums;background:#ff5d5d}
+body.noselect{user-select:none}
+
+/* ===== 监控墙抽屉 (v28 重做·v31 揪揪压缩·D028/D029) ===== */
+.segwall{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;padding:0 14px}
+.segcell{width:88px;height:52px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;cursor:pointer;border:1px solid var(--line)}
+.segcell.ok{background:#18352a;color:#bfe8d2;border-color:#2f6f4a}
+.segcell.run{background:#3a3018;color:#f2ddb0;border-color:#8a6d2f}
+.segcell.bad{background:#3a1c1c;color:#f2c0c0;border-color:#7a3b3b}
+.segcell.wait{background:#20232a;color:var(--txt2)}
+
+/* ===== 弹窗通用 (mbox 形态·复用 theme) ===== */
+.mbox-wrap{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;z-index:100}
+.mbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:420px;max-width:720px;max-height:82vh;overflow:auto}
+.mbox h3{margin:0 0 8px;font-size:15px}
+.mbox .sub{font-size:12px;color:var(--txt2);margin-bottom:12px;line-height:1.6}
+.mbox .foot{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.mbox .hist-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer;font-size:12px}
+.mbox .hist-row:hover{border-color:var(--accent-bright)}
+.mbox .hist-row .meta{color:var(--txt3);margin-left:auto}
+
+/* ===== 后处理徽标 (S2-2 T6·四态) ===== */
+// 配色复用 segcell ok/run/bad 调色板; fallback 用 warn 色变体, 视觉与 run 区分.
+// 入口: 历史弹窗行内 chip + 监控墙抽屉后处理行.
+.postfx-badge{display:inline-flex;align-items:center;font-size:11px;border-radius:8px;padding:1px 8px;flex-shrink:0;border:1px solid;white-space:nowrap;line-height:1.6}
+.postfx-badge.ok{color:#bfe8d2;background:#18352a;border-color:#2f6f4a}
+.postfx-badge.run{color:#f2ddb0;background:#3a3018;border-color:#8a6d2f}
+.postfx-badge.bad{color:#f2c0c0;background:#3a1c1c;border-color:#7a3b3b}
+.postfx-badge.warn{color:#ffe7a3;background:#3a2c10;border-color:#9a7028}
+.postfx-line{display:flex;align-items:center;gap:8px;padding:8px 14px 0;font-size:12px;color:var(--txt2)}
+.postfx-line .postfx-tag{color:var(--txt3);font-size:11px}
+
+/* ===== 多版对比 grid (D031) ===== */
+/* 批 L1 T3③（R-24 甲）：align-items:start —— 各格按视频实际比例（内联 aspect-ratio·见 edit.js
+   openCompareModal）后不再等高拉伸，矮比例格不留大黑边；.cmp-cell 的 16/9 保留为 metadata 不可得时的兜底 */
+.cmp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px;align-items:start}
+.cmp-grid.four{grid-template-columns:repeat(2,1fr)}
+.cmp-grid:not(.four){grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.cmp-cell{position:relative;aspect-ratio:16/9;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--playerbg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--txt2)}
+.cmp-cell .cmp-tag{position:absolute;left:8px;top:8px;font-size:11px;color:var(--txt);background:#0009;border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+.cmp-cell .cmp-tc{font-size:11px;font-variant-numeric:tabular-nums}
+.cmp-cell .cmp-bar{width:70%;height:3px;background:var(--line);border-radius:2px;overflow:hidden}
+.cmp-cell .cmp-bar i{display:block;height:100%;width:0;background:var(--accent-bright)}
+.exwarn{display:flex;gap:8px;font-size:12px;color:var(--warn);margin-top:6px}
+
+/* 老板 2026-09-26 UI 结构核对修正：split-h 时间线高低拖条（v43 :290-292 逐字提取） */
+.split-h{height:10px;cursor:row-resize;margin:8px 0;flex-shrink:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(var(--panel2),var(--panel));position:relative}
+.split-h::after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:46px;height:4px;border-radius:8px;background:#3a4250}
+.split-h:hover::after{background:var(--accent-bright)}

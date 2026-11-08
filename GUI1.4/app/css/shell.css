@@ -1,0 +1,779 @@
+/*
+ * GUI1.3 应用壳样式（左栏/顶栏/TAB/工作区壳 · 页面级布局）
+ * 源：v43 原型（md5=43c85f743cfb8445f63fb8292c3355aa）style 布局段（S1-1 T2 提取）
+ *
+ * 提取范围（v43 行号 → 类名）：
+ *   :21    #app
+ *   :23    #sidenav
+ *   :24    .logo
+ *   :25    .logo .mark
+ *   :26    .btn-new
+ *   :27    .btn-new:hover
+ *   :28    .nav
+ *   :29    .nav-item
+ *   :30    .nav-item .ico
+ *   :31    .nav-item:hover
+ *   :32    .nav-item.active
+ *   :33    .nav-spacer
+ *   :34    .ws
+ *   :35    .ws .avatar
+ *   :36    .ws-label
+ *   :37    .ws-label small
+ *   :38    .bell
+ *   :39    .bell .dot
+ *   :42    #main
+ *   :43    #banner
+ *   :45    #views                          ← v43 已知同名重复组（:45 + :752-753）
+ *   :180   .pws-head
+ *   :181   .pws-head h2
+ *   :182   .pws-status
+ *   :183   .runhint
+ *   :184   .runbtn
+ *   :175   .lamp                          ← 批 R2 A13（全站状态灯）
+ *   :364-372 / :692-699 .runs 运行记录区   ← 批 R2 A01（runs-cap/runrow/rundet/runchip）
+ *   :256   .ptabs
+ *   :257   .ptab
+ *   :258   .ptab:hover
+ *   :259   .ptab.on
+ *   :260   .pview
+ *   :192-194 / :252 / :261-275 / :755  预览组（.player/.filmstrip/.fsthumb）← 批 R3 A11/A12
+ *   :505   .navfold
+ *   :506   .navfold:hover
+ *   :509-515 slim 态覆盖（body.slim 体系）
+ *
+ * 范围外（不搬）：
+ *   - .cb-root / .cnode / .cb-wires 等画布件：归 S1-4
+ *   - .pws .col：归 S1-2（设定 TAB 主区段）
+ *   - .timeline：归 S1-3（剪辑 TAB）
+ *
+ * === v43 已知同名重复组处置 ===
+ * #views 共两组：
+ *   A 组（v43 :45，主区容器= flex:1;overflow:auto;padding:24px 28px;position:relative）
+ *   B 组（v43 :752-753，#views{display:flex;flex-direction:column} + #views>section{flex:1 0 auto;display:flex;flex-direction:column}）
+ * 属性集合并不重叠——A 组管外层布局，B 组管子 section 排列——
+ * 按 S1-0 T3 报告处置模式「属性并集合并或注明」——本任务合并：
+ *   #views { flex:1;overflow:auto;padding:24px 28px;position:relative;display:flex;flex-direction:column }
+ *   #views>section { flex:1 0 auto;display:flex;flex-direction:column }
+ *   注：A 组缺 display:flex 会让 B 组 fallback 失效，故并集是必要补丁。
+ *
+ * === 命名纪律 ===
+ * 保留 v43 类名原样，不二次缩写；shell 模块新增类（.shell-app/.shell-sidenav/.shell-main/.shell-topbar/.shell-topbar-empty/.shell-view/.shell-tab-placeholder/.topbar-title）以 .shell- 前缀隔离。
+ */
+
+:root {
+  --navw: 200px;
+}
+
+/* ===== 应用主结构（v43 :21） ===== */
+#app {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+/* ===== 左栏（v43 :23-39） ===== */
+/* v43 :23 #sidenav */
+#sidenav {
+  width: var(--navw);
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  padding: 14px 10px 10px;
+  flex-shrink: 0;
+  transition: width .15s;
+}
+/* v43 :24 .logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 4px 8px 16px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+/* v43 :25 .logo .mark */
+.logo .mark {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #eafcff;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+/* v43 :26 .btn-new */
+.btn-new {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--accent);
+  color: #eafcff;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 0;
+  cursor: pointer;
+  margin-bottom: 14px;
+  white-space: nowrap;
+}
+/* v43 :27 .btn-new:hover */
+.btn-new:hover { background: var(--accent-deep); }
+
+/* v43 :28 .nav */
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+/* v43 :29 .nav-item */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  color: var(--txt2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+/* v43 :30 .nav-item .ico */
+.nav-item .ico {
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+/* v43 :31 .nav-item:hover */
+.nav-item:hover {
+  background: var(--panel2);
+  color: var(--txt);
+}
+/* v43 :32 .nav-item.active */
+.nav-item.active {
+  background: #10333a;
+  color: var(--txt);
+}
+/* v43 :33 .nav-spacer */
+.nav-spacer { flex: 1; }
+
+/* v43 :34 .ws */
+.ws {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--line);
+  white-space: nowrap;
+}
+/* v43 :35 .ws .avatar */
+.ws .avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--panel2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--txt2);
+}
+/* v43 :36 .ws-label */
+.ws-label { line-height: 1.25; }
+/* v43 :37 .ws-label small */
+.ws-label small {
+  color: var(--txt2);
+  display: block;
+  font-size: 12px;
+}
+/* v43 :38 .bell */
+.bell {
+  margin-left: auto;
+  color: var(--txt2);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+}
+/* v43 :39 .bell .dot */
+.bell .dot {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background: var(--bad);
+  color: #fff;
+  font-size: 12px;
+  border-radius: 8px;
+  padding: 0 4px;
+  display: none;
+}
+
+/* ===== slim 态（v43 :509-515） ===== */
+/* v43 :509 body.slim */
+body.slim { --navw: 56px; }
+/* v43 :510 slim 隐藏文字 */
+body.slim .appname,
+body.slim .nav-label,
+body.slim .btn-txt,
+body.slim .ws-label,
+body.slim .ws small { display: none; }
+/* v43 :511 slim 按钮 */
+body.slim .btn-new { padding: 10px 0; }
+/* v43 :512 slim nav-item 居中 */
+body.slim .nav-item { justify-content: center; gap: 0; }
+/* v43 :513 slim logo 居中 */
+body.slim .logo { justify-content: center; padding: 4px 0 16px; }
+/* v43 :514 slim ws 居中 */
+body.slim .ws { justify-content: center; }
+
+/* ===== 主区（v43 :42-45） ===== */
+/* v43 :42 #main */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+}
+/* v43 :43 #banner（v43 原型有，正式版可后续决定是否显示；保留样式待用） */
+#banner {
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  color: var(--txt2);
+  font-size: 12px;
+  padding: 6px 16px;
+}
+#banner b { color: var(--txt); }
+
+/*
+ * #views —— v43 同名重复组合并（A :45 + B :752-753）
+ * A 组：flex:1;overflow:auto;padding:24px 28px;position:relative
+ * B 组：#views{display:flex;flex-direction:column} + #views>section{flex:1 0 auto;display:flex;flex-direction:column}
+ * 属性并集：A 必备外层布局，B 必备子 section 排列——A 缺 display:flex 会让 B 的 column 排列失效
+ * 处置：A+B 并集合并（外层 + 子层）
+ */
+/* #views（合并 A+B 外层） */
+#views {
+  flex: 1;
+  overflow: auto;
+  padding: 24px 28px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+/* #views>section（B 组子层） */
+#views>section {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+/*
+ * 老板 2026-09-27 走查：顶栏行 / 运行记录 / TAB 行原顶着左上角（压迫感）——
+ * 这三行挂 #projTopbar（#topbar 子层），真机实测其 padding:0（left=200/top=0）。
+ * 补 v43 :45 主区留白 24px 28px；下留 0：与 #views 上留白同一段间距，不叠出双份。
+ */
+.proj-topbar {
+  padding: 24px 28px 0;
+}
+
+/* ===== 工作区顶栏（v43 :180-184） ===== */
+/* v43 :180 .pws-head（F57 批10C-T1：原右上角芯片 156px 右留白避让已摘——槽位迁侧栏底部不再盖本行） */
+.pws-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+/* v43 :181 .pws-head h2 */
+.pws-head h2 {
+  font-size: 17px;
+  font-weight: 600;
+}
+/* v43 :175 .lamp 状态灯（批 R2 A13 照搬 · 全站在位，⑧ 单元复用） */
+.lamp{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block}
+/* v43 :182 .pws-status */
+.pws-status { font-size: 12px; color: var(--txt2); }
+/* v43 :183 .runhint */
+.runhint { font-size: 12px; color: var(--txt3); }
+/* v43 :184 .runbtn（项目运行主行动按钮） */
+.runbtn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: #eafcff;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 18px;
+  cursor: pointer;
+}
+
+/*
+ * ===== 老板 2026-09-26 走查快批②：顶栏窄屏单行化（.pws-head 两档媒体查询） =====
+ * 现状：1920 档单行；1258~1440 折两行（真机 offsetHeight=79/80）。
+ * 可用宽 = 视口 − 左栏 200 − 主区留白 56 − 芯片避让 108 = 视口 − 364。
+ * 两档按实测余量递进收（纯 CSS：DOM 不动 · 元素不删 · title 全保 · 1920 档零影响）：
+ *   档1 ≤1740：gap 12→8 + 小按钮内边距 12→10 + 返回/创作画布收成图标
+ *              + label（模式/每段几版）收 + 更多收 ⋯ + 限宽省略 → 需 ~995px
+ *   档2 ≤1490：档1 基础上 gap→6 + 内边距→9 + 重置/重渲收成图标 → 需 ~840px
+ * 限宽省略是硬保证：运行态文案与项目名长度可变，不设上限则长文案仍会把整行顶折。
+ * 登记项 10（快批②存量·档外窄缝收口，真机实测驱动）：
+ *   ①1500-1520 缝：原档1 只收 gap/padding/两钮图标（需 ~1096px > 1491 可用 1127 边缘），
+ *     长名/长状态把「运行项目/更多」挤到第二行 → 档1 补 label 隐藏 + 更多收 ⋯ + 限宽（需 ~995px）
+ *   ②1720-1730 缝：原断点 1710 之上无保护，长名顶折 → 档1 断点提至 1740（该区间走档1 全收敛）
+ */
+@media (max-width: 1740px) {
+  .pws-head { gap: 8px; }
+  .pws-head .ghostbtn,
+  .pws-head .dangerbtn { padding-left: 10px; padding-right: 10px; }
+  /* 返回项目列表 / 创作画布 收成图标（title 保全文案） */
+  .pws-head > .ghostbtn:first-child,
+  .pws-head > .ghostbtn.canvas-entry { font-size: 0; gap: 0; }
+  /* ⋯ 更多 收成 ⋯（纯文本按钮：font-size:0 会连 ⋯ 一起收掉，::after 补回字形） */
+  .pws-head > #projMoreBtn { font-size: 0; gap: 0; }
+  .pws-head > #projMoreBtn::after { content: "⋯"; font-size: 13px; }
+  /* 模式 / 每段几版 label 收（控件自身 title 保全文案） */
+  .pws-head > span:has(+ #projMode),
+  .pws-head > span:has(+ #runCount) { display: none; }
+  /* 状态条 / 项目名限宽省略（与档2 同值：长运行态、长项目名不再把整行顶折） */
+  .pws-status {
+    max-width: 184px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pws-head h2 {
+    max-width: 112px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 1490px) {
+  .pws-head { gap: 6px; }
+  .pws-head .ghostbtn,
+  .pws-head .dangerbtn { padding-left: 9px; padding-right: 9px; }
+  /* 重置草稿 / 只重渲失败段 收成图标（title 保全文案）——更多⋯/label 收/限宽省略已由档1（≤1740）覆盖
+     B4-T2：只重渲失败段接真（.pending-off 退役）→ 图标化锚改挂 #rerunFailedBtn */
+  .pws-head > #resetBtn,
+  .pws-head > #rerunFailedBtn { font-size: 0; gap: 0; }
+}
+
+/*
+ * ===== 运行记录区（批 R2 A01 照搬 · v43 :364-372 主组 + :692-699 补充组） =====
+ * 提取纪律：两组原文照搬不合并（.runrow 在 v43 分两处定义，后写覆盖语义与原型一致）
+ * 范围外：.fchip 已在 theme.css :117-119（与 v43 :624-626 同文），不重复定义
+ */
+/* v43 :364 .runs */
+.runs{margin:0 0 12px;font-size:12px}
+/* v43 :365 .runs-cap */
+.runs-cap{color:var(--txt2);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+/* v43 :366 */
+.runs-cap:hover{color:var(--txt)}
+/* v43 :367 #runsList */
+#runsList{margin-top:8px;display:none;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:6px 12px}
+/* v43 :368 */
+#runsList.show{display:block}
+/* v43 :369 .runrow */
+.runrow{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid #20232a;font-size:12px}
+/* v43 :370 */
+.runrow:last-child{border-bottom:none}
+/* v43 :371 .runrow .cur */
+.runrow .cur{color:var(--ok);font-size:12px;border:1px solid #2f6f4a;border-radius:8px;padding:0 6px}
+/* v43 :372 · F71（批 10-J-T2）行尾时间提一档 --txt3→--txt2（--panel 底上 3.54:1 不过 AA → 6.96:1） */
+.runrow small{margin-left:auto;color:var(--txt2)}
+/* v43 :692 */
+.runrow{cursor:pointer}
+/* v43 :693 */
+.runrow:hover{background:#1a1d22}
+/* v43 :694 .rundet */
+.rundet{display:none;padding:8px 4px 10px 46px;border-bottom:1px solid #20232a}
+/* v43 :695 */
+.rundet.show{display:block}
+/* v43 :696 .runchip */
+.runchip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:8px;padding:2px 8px;font-size:12px;margin-right:6px}
+/* v43 :697 */
+.runchip.ok{color:var(--ok);border-color:#2f6f4a}
+/* v43 :698 */
+.runchip.bad{color:var(--bad);border-color:#7a3b3b}
+/* v43 :699 */
+.runchip.wait{color:var(--txt2)}
+
+/* ===== 工作区 TAB（v43 :256-260） ===== */
+/* v43 :256 .ptabs */
+.ptabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+/* v43 :257 .ptab */
+.ptab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  font-size: 13px;
+  color: var(--txt2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+/* v43 :258 .ptab:hover */
+.ptab:hover { color: var(--txt); }
+/* v43 :259 .ptab.on */
+.ptab.on {
+  color: var(--txt);
+  border-bottom-color: var(--accent-bright);
+}
+/* v43 :260 .pview（工作区视图容器） */
+.pview {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ===== 项目预览 TAB（批 R3 · ② A11/A12 照搬 · v43 :192-194/:252/:261-275/:755） =====
+ * 范围：.player 全片预览 + .filmstrip 胶片条（.fsthumb 三态/审计态/选中/拼接钮）
+ * .lamp/.inh/.ghostbtn/.num 主题已就位（本文件 R2 / theme.css），不重复定义 */
+/* v43 :192 .player */
+.player{flex:1;min-height:200px;background:var(--playerbg);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--txt2)}
+/* v43 :252 .player 半句（.timeline 半句归 edit.css 域，不越界搬） */
+.player{user-select:none}
+/* v43 :755 #pv-preview .player（预览 TAB 覆写） */
+/* F54 二返（老板复验：大屏撑满式视频盒≈全屏高「尺寸不正常 过大」）：62vh 高度帽封顶=影院模式量级，小屏不受影响 */
+#pv-preview .player{flex:1;min-height:220px;max-height:62vh}
+/* 播放元素约束（edit.css .edit-player video 平移 · 无它 video 撑破 flex 列）
+   10-E-T3 · F54（老板截图：视频只按原生分辨率居中缩→上下黑底留白）：盒撑满 .player 剩余空间
+   （flex:1+min-height:0）+ 帧内 object-fit:contain 信箱化；时长行/live 降级条/帧宿主/进度宿主
+   诸兄弟各占其位（flex 列自洽）。#pv-preview 域限定——edit.css .edit-player 同款现象不在本单范围 */
+#pv-preview .player video{flex:1;min-height:0;width:100%;object-fit:contain;outline:none}
+/* 批5-R54-T1：页内三子页签容器（F-62 先例·同挂 DOM display:none 显隐）——子页撑满 .pview 剩余列高
+   （.player 迁入视频子页后原「.player 直挂 .pview 拿 flex:1」的链路改经子页容器传导）。*/
+#pv-preview .pv-subpage{flex:1;min-height:0;display:flex;flex-direction:column}
+/* 老板 2026-10-07 功能件：全片预览/胶片条交界拖动手柄（调全篇预览区域大小）
+   形态沿用 edit.css .split-pv 同款（水平细条 + cursor:row-resize + hover 变亮）；
+   拖动语义与「置 flex:0 0 auto 令拖定高度退出 flex 分摊」同 edit.js buildSplitPv。
+   胶片条 max-height:45vh（上一轮「没有滑块」修复）保持不变：手柄只调预览区高度，
+   胶片条维持自身固定上限，两者互不挤占（上轮口径·老板「视觉不破」）。*/
+#pv-preview .pv-resize{height:6px;flex-shrink:0;cursor:row-resize;margin:8px 0;border-radius:6px;background:var(--panel2);border-top:1px solid var(--line)}
+#pv-preview .pv-resize:hover{background:rgba(84,196,255,.45)}
+/* v43 :261 .filmstrip（老板 2026-10-07 报障修订笔：片段过多时排序诡异 + 无滑块）
+   根因·真机取证（项目 test1 · 250 段 · 视口 1258px）：
+     .filmstrip scrollWidth=clientWidth=7324 / overflow-x:visible → 溢出全逃到文档
+     （documentElement.scrollWidth=7580），胶片条自身永不产生可拖滚动条＝「没有滑块」。
+   修法·三处：
+     ① flex-wrap:wrap —— 原 nowrap 把 250 项挤成一行，其 min-content 沿 flex 链一路上传
+        （.shell-app 是全链唯一未清 min-width:auto 的 flex 项）把整页撑到 7580px。
+        换行后单行 min-content 收缩到一枚缩略图宽，文档宽实测回落 1258＝视口，无须动 .shell-app。
+     ② max-height + overflow-y:auto —— 溢出时出可拖纵向滑块（老板口径「横向或纵向按现布局定」
+        ·本件纵向：换行后段多时纵向溢出是必然，纵滑最省改动、不重设计版式）。
+        max-height 不可省：盒子随内容长高则无溢出、auto 不出滑块。
+   段序不受影响：DOM 序仍是 proj.segments 数组序，wrap 只改视觉分行（行内左→右·行间上→下 = 段序）。*/
+.filmstrip{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;max-height:45vh;overflow-y:auto}
+/* v43 :262 .fsthumb（同步修订：flex:1 → flex:1 1 140px）
+   原 flex:1(=flex:1 1 0%) 无 flex-basis 下限，250 项在换行后的行内被均分到 19px 宽，
+   「段250 · 待生成」压进 19px 逐字竖排＝肉眼读不出段序（「排序方式诡异」·截图证据见
+   .tmp/ipv-01-before.png）。140px 基准：段标一行读完；少段时 flex-grow 仍撑满一行、
+   max-width:220px 封顶行为与 v43 原设计一致（3/6 段实测与修复前逐像素同宽）。*/
+.fsthumb{flex:1 1 140px;max-width:220px;height:64px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--line);position:relative;transition:border-color .12s,box-shadow .12s}
+/* v43 :263 .fsthumb.done */
+.fsthumb.done{background:linear-gradient(180deg,#79b3d8,#cfe3ee 55%,#e8d9b8 56%,#d8c9a4);color:#1d3a4f}
+/* v43 :264 .fsthumb.warn */
+.fsthumb.warn{background:linear-gradient(180deg,#7a3b3b,#3a1c1c);color:#f2c0c0;border-color:#7a3b3b}
+/* v43 :265 .fsthumb.empty */
+.fsthumb.empty{background:#23262c;color:var(--txt2);font-weight:400}
+/* v43 :267-269 .fsthumb-dot 三色（批 F98-B·老板 2026-10-03 深夜裁 B：默认未审点 黄 var(--warn)
+   →中性灰 var(--txt3)（与「不通过」灰 #555e6a 同阶·两灰态靠缩略本体的 title 区分）；
+   审过绿 / 不通过灰两条规则不动） */
+.fsthumb-dot{position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:50%;background:var(--txt3);box-shadow:0 0 0 2px #16181bf0;pointer-events:none}
+.fsthumb.audited-ok .fsthumb-dot{background:var(--ok)}
+.fsthumb.audited-bad .fsthumb-dot{background:#555e6a}
+/* v43 :271 .fsthumb.sel（多选中态） */
+.fsthumb.sel{border-color:var(--accent-bright);box-shadow:0 0 0 2px #10333a}
+/* 批 J-P14：胶片条缩略图 canvas 采样层（视频段；替引擎 thumb 恒 72×128 的裁头+糊）。
+   与剪辑页 edit.css:28-32 的 .clipfilm/.hasfilm .cap 同款形态——故不能直接复用那几条
+   （它们作用域是 .clip，本页格子的类名是 .fsthumb），在此按 .fsthumb 作用域重写一份。
+   每格 background-size:cover + center：采样产物是**整帧**，cover 按格高缩放后高度恒等格高
+   → 垂直裁切恒 0 → 竖帧头部不裁（几何锁见 preview.test.mjs J-P14 ③）。*/
+.fsthumb-film{position:absolute;inset:0;display:flex;overflow:hidden;pointer-events:none;border-radius:7px}
+.fsthumb-film i{flex:1;min-width:0;background-size:cover;background-position:center;border-right:1px solid #0007}
+.fsthumb-film i:last-child{border-right:none}
+/* 段标压在胶片层之上（胶片层是绝对定位元素·不给段标堆叠上下文会被盖住） */
+.fsthumb-cap{position:relative;z-index:1}
+.fsthumb.hasfilm .fsthumb-cap{color:#fff;text-shadow:0 0 3px #000d,0 1px 2px #000d}
+/* v43 :273-275 .fs-stitch-btn（≥2 段选中才 show） */
+.fs-stitch-btn{margin-left:8px;background:#10333a;color:var(--accent-bright);border:1px solid var(--accent-bright);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;display:none}
+.fs-stitch-btn.show{display:inline-flex;align-items:center;gap:6px}
+.fs-stitch-btn:hover{background:#194653}
+
+/* ===== shell 模块新增类（v43 原型无；以 .shell- 前缀隔离） ===== */
+/* 应用壳根容器 */
+.shell-app {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+.shell-sidenav {
+  width: var(--navw);
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  padding: 14px 10px 10px;
+  flex-shrink: 0;
+  transition: width .15s;
+}
+.shell-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+}
+.shell-topbar {
+  flex-shrink: 0;
+}
+/* 批 10C-T1 · F57（老板裁⑤A=侧栏底部）：引擎芯片+铃铛槽位迁 #sidenav 底部一行（.ws 之下，
+   挂载点见 shell.js mount）——原绝对定位槽（top:10 right:28 z-index:5）盖各页顶行右侧，
+   仅 .pws-head 有 156px 避让补丁（已随本批摘除）；侧栏底部一行不遮任何页面内容。
+   notif-panel 面板锚铃铛向上弹出（notif.js 按铃铛几何落点 + theme.css 兜底位） */
+.shell-eng-slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* 侧栏宽度可拖 160-480：窄档横排放不下 → 折行，图标不溢出 */
+  flex-wrap: wrap;
+  padding: 8px 2px 0;
+}
+.shell-eng-slot .bell {
+  color: var(--txt2);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  padding: 3px;
+  /* 压掉 .bell 基础规则 margin-left:auto（v43 .ws 行尾口径）——本槽三件紧凑左对齐成一行 */
+  margin-left: 0;
+}
+/* 批0-T4 工具簇搜索钮（超原型轻微 · 待老板追认）——套 .bell 同款槽内体系（无红点·免 relative） */
+.shell-eng-slot .search-btn {
+  color: var(--txt2);
+  cursor: pointer;
+  display: flex;
+  padding: 3px;
+}
+/* F57 slim 收起态（--navw:56px·内容宽 36px）：横排溢出 → 纵排居中 + 芯片只留灯位
+   （对齐 body.slim 隐藏文字体系；芯片 padding 同步收窄保证 10px 灯位落得下） */
+body.slim .shell-eng-slot { flex-direction: column; align-items: center; gap: 6px; padding: 8px 0 0; }
+body.slim #engChip { padding: 4px 6px; }
+body.slim #engChip .eng-chip-text { display: none; }
+.shell-topbar-empty {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--txt2);
+}
+.shell-topbar-empty .topbar-title {
+  font-weight: 600;
+  color: var(--txt);
+}
+.shell-view {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+/* 占位壳（资产管理/AI 协作/项目管理/设置页/画布/TAB 内容区） */
+.shell-tab-placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  background: #11131760;
+  padding: 24px;
+}
+.shell-tab-placeholder .ph-cap {
+  font-size: 13px;
+  color: var(--txt2);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ===== 批1-T5 · H7：侧栏宽度拖拽手柄（1.0 core/col_resize.js 口径） ===== */
+/* 侧栏右缘 4px 竖条：hover 变亮 + col-resize 光标；宽度拖拽落 --navw（记忆键 h3gui_col_left_w）；
+   slim 收起态隐藏手柄（body.slim 的 --navw:56px 压制宽度记忆·互斥） */
+#sidenav, .shell-sidenav { position: relative; }
+.sidenav-resize{position:absolute;top:0;right:-2px;width:4px;height:100%;cursor:col-resize;z-index:6;background:transparent}
+.sidenav-resize:hover{background:rgba(84,196,255,.45)}
+/* 拖拽中关宽度过渡（#sidenav transition .15s 跟手需要） */
+#sidenav.resizing, .shell-sidenav.resizing{transition:none}
+body.slim .sidenav-resize{display:none}
+
+/* ===== 批 5-T3（H5 全站搜索增强） ===== */
+/* 命中词高亮：guide.js highlightSnippet 包 <mark class="gs-mark">（原 <mark> 浏览器黄底不适配深色主题） */
+.gs-mark{background:rgba(84,196,255,.18);color:var(--accent-bright);border-radius:3px;padding:0 1px}
+/* 结果项副行（资产标签/备注 · 历史 mode/计数/备注）——超长省略 */
+.gs-meta{color:var(--txt3);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 搜索跳转落点高亮（资产卡 / 历史弹窗行 共用 · 2s 闪烁；keyframes gotoFlash 见 segcards.css · 全站同页加载） */
+.acard.goto-flash, .mbox .hist-row.goto-flash{border-color:var(--accent-bright);box-shadow:0 0 0 3px rgba(84,196,255,.22);animation:gotoFlash 2s ease}
+
+/* ===== 批 10-P · P-T5（R-19）：看成片浮层分段行——段号+sid+成败标记+产物名；成功段可点播，失败/中止段只陈列 ===== */
+.vrf-row{display:flex;gap:8px;align-items:center;padding:4px 10px;margin:4px 0;border-radius:6px;cursor:pointer;font-size:12px;color:var(--txt2)}
+.vrf-row:hover{background:var(--panel2)}
+.vrf-row.none{cursor:default;opacity:.72}
+.vrf-row.none:hover{background:none}
+.vrf-row.ok .vrf-st{color:var(--ok)}
+.vrf-row.bad .vrf-st{color:var(--bad)}
+.vrf-row.stop .vrf-st{color:var(--warn)}
+
+/* ===== #36 左侧栏「历史记录」视图（方案 D1/D4·分组折叠 + 行形态三件） ===== */
+/* 作用域纪律：视图内类名一律 .hist-view 前缀作用域内——edit.js 历史弹窗的 .hist-row 同名不同义
+   （其样式在 edit.css 且限定 .mbox），此处不得外溢到剪辑域。浮层挂在 body 上·单独作用域。 */
+.hist-view{display:flex;flex-direction:column;gap:10px;min-height:0}
+.hist-view .hist-top{display:flex;align-items:center;gap:10px}
+.hist-view .hist-top h2{margin:0;font-size:16px;color:var(--txt)}
+.hist-view .hist-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+/* 清空钮武装态（armTwoStepConfirm 同构视觉·色值同 projects.css :86） */
+.hist-view .ghostbtn.armed{color:#ff9a9a;background:#1a1212;border-color:#7a3b3b}
+.hist-view .hist-status{font-size:12px;color:var(--txt2);min-height:16px}
+.hist-view .hist-list{display:flex;flex-direction:column;gap:8px;min-height:0}
+
+/* 分组（默认折叠·点组头展开） */
+.hist-view .hist-group{border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+.hist-view .hist-group-head{display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;font-size:13px;color:var(--txt)}
+.hist-view .hist-group-head:hover{background:var(--panel2)}
+.hist-view .hist-caret{color:var(--txt3);font-size:10px;width:12px;display:inline-block}
+.hist-view .hist-group.open .hist-caret{transform:rotate(90deg)}
+.hist-view .hist-group-name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-view .hist-group-count{margin-left:auto;color:var(--txt3);font-size:12px}
+.hist-view .hist-group-body{display:none;padding:8px 10px 10px;border-top:1px solid var(--line)}
+.hist-view .hist-group.open .hist-group-body{display:block}
+
+/* 任务块（批次） */
+.hist-view .hist-task{margin-bottom:10px}
+.hist-view .hist-task:last-child{margin-bottom:0}
+.hist-view .hist-task-head{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txt3);margin-bottom:4px}
+.hist-view .hist-task-id{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-view .hist-task-time{margin-left:auto;flex:0 0 auto}
+.hist-view .hist-rows{display:flex;flex-direction:column;gap:6px}
+
+/* 行：预览图与名称分开展示（④） */
+.hist-view .hist-row{display:flex;align-items:center;gap:10px;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--panel2)}
+.hist-view .hist-row.degraded{color:var(--warn);font-size:12px;cursor:default}
+.hist-view .hist-thumb{position:relative;flex:0 0 auto;width:112px;height:64px;border-radius:6px;overflow:hidden;background:#11131760;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.hist-view .hist-thumb-img{width:100%;height:100%;object-fit:cover;display:block}
+.hist-view .hist-thumb-none{font-size:11px;color:var(--txt3)}
+.hist-view .hist-more{position:absolute;top:2px;right:2px;width:20px;height:20px;line-height:1;border-radius:4px;border:1px solid var(--line);background:rgba(14,15,17,.78);color:var(--txt2);font-size:12px;cursor:pointer;padding:0}
+.hist-view .hist-more:hover{color:var(--txt);border-color:var(--accent-bright)}
+/* 名称：过长省略 + 悬停 title 显全名（title 由 JS 挂·此处只管省略形态） */
+.hist-view .hist-name{flex:1 1 auto;min-width:0;font-size:13px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 回收站行（T3）：行复用 .hist-row 骨架·右侧元信息与恢复钮 */
+.hist-view .hist-meta{flex:0 0 auto;font-size:11px;color:var(--txt3)}
+.hist-view .hist-restore{flex:0 0 auto;padding:2px 10px}
+
+/* 「...」下拉三件 */
+.hist-menu{position:fixed;z-index:10500;min-width:168px;padding:4px;border:1px solid var(--line);border-radius:8px;background:var(--panel);box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.hist-menu-item{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:6px;font-size:12px;color:var(--txt);cursor:pointer}
+.hist-menu-item:hover{background:var(--panel2)}
+.hist-menu-item.disabled{color:var(--txt3);cursor:not-allowed}
+.hist-menu-item.disabled:hover{background:none}
+
+/* 片段播放浮层（showFinalPreview 同构·原生 controls） */
+.hist-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:11000;display:flex;align-items:center;justify-content:center;padding:24px}
+.hist-overlay-box{width:min(960px,95vw);max-height:90vh;background:#17171b;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.hist-overlay-head{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--txt2,#cfd8ff)}
+.hist-overlay-title{flex:1;word-break:break-all}
+.hist-video{width:100%;max-height:70vh;background:#000}
+
+/* #64 T1 视图切换 + 图片墙（列表｜图片墙）——卡用 .hist-card* 独立命名·与既有列表类互不串样式 */
+.hist-view .hist-viewswitch{display:inline-flex;align-items:center;gap:6px;margin-right:4px}
+.hist-view .hist-viewswitch .ghostbtn.on{color:var(--txt);border-color:var(--accent-bright);background:var(--panel2)}
+.hist-view .hist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.hist-view .hist-card{display:flex;flex-direction:column;gap:6px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);min-width:0;position:relative}
+.hist-view .hist-card-thumb{position:relative;width:100%;aspect-ratio:16/9;min-height:96px;border-radius:6px;overflow:hidden;background:#11131760;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.hist-view .hist-card-name{font-size:12px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-view .hist-card-degraded{font-size:12px;color:var(--warn)}
+
+/* #64 T2 选择模式（图片墙）——卡槽摊平入网格 + 卡上勾选框 + 底部操作条 */
+.hist-view .hist-selectholder{display:inline-flex;align-items:center}
+.hist-view .hist-cardslot{display:contents}
+/* 真盒锚点（#64 缺陷1 修正）：卡槽 display:contents 自身无布局盒 → 真机 IO 永不 intersect → 冷缓存空墙
+   锚点为真网格项（有盒·会 intersect）→ 懒载挂点挂它；detail 到位后锚点被 N 张片段卡替换 */
+.hist-view .hist-cardslot-anchor{display:block;min-height:8px;border-radius:4px;background:#11131760}
+.hist-view .hist-card-check{position:absolute;top:8px;left:8px;z-index:2;width:18px;height:18px;margin:0;accent-color:var(--accent-bright);cursor:pointer}
+.hist-view .hist-selbar{position:sticky;bottom:0;display:flex;align-items:center;gap:10px;margin-top:10px;padding:8px 10px;border-top:1px solid var(--line);background:var(--panel)}
+.hist-view .hist-sel-count{font-size:12px;color:var(--txt2)}
+
+/* #64 改错笔·工具区恒定槽位（老板裁决 A·方案 修订记录二）：
+   左组=清空（左侧锚定·钮面计数随 N 变宽不牵动右簇）·右簇=选择|列表|图片墙|回收站|刷新（margin-left:auto 锚右·子序恒定） */
+.hist-view .hist-actions-left{display:flex;align-items:center;gap:8px}
+/* 「选择」钮固定宽槽：min-width 按两文案较宽者（「退出选择」四字·实测≈78px·留 4px 字体漂移余量）→ 进出选择模式零位移 */
+.hist-view .hist-selectbtn{min-width:82px;justify-content:center}
+/* 「回收站/返回列表」钮同款固定宽槽：文案变长不撑右簇 → 列表↔回收站切换零位移 */
+.hist-view .hist-trashbtn{min-width:82px;justify-content:center}
+/* 工具区不适用态=置灰禁用（恒占位·禁用即真禁用）——只作用于工具区（.hist-top 内） */
+.hist-view .hist-top .ghostbtn:disabled,.hist-view .hist-top .ghostbtn:disabled:hover{opacity:.45;cursor:not-allowed;color:var(--txt2);background:transparent}
+
+/* #64 T2b 件B 底部「加载更多」钮（全库可见·钮文带「已显示 X / 共 N 条」计数） */
+.hist-view .hist-morebox{display:flex;justify-content:center;padding:2px 0}
+.hist-view .hist-loadmore{font-size:12px;padding:4px 14px}
+
+/* ===== T8 · #52 首启体检（体检行 / 横幅 / 明细面板）=====
+   壳层新增三组类·不与既有类串样式（既有规则零改动）：
+   ① .shell-hc-status 侧栏状态行（全绿·一行「体检 ✓」）——落 #sidenav 底部一行（.ws / .shell-eng-slot 之下）
+   ② .shell-hc-bar   横幅（红项 / 服务不可达）——在 #main 列内通栏（flex-shrink:0·恒在视野·不盖页面内容）
+   ③ .shell-hc-panel 明细面板（点「查看详情」展开·七项逐行） */
+.shell-hc-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-top: 1px solid var(--line);
+  color: var(--ok);
+  font-size: 12px;
+  white-space: nowrap;
+}
+/* slim 收起态（--navw:56px）放不下整行文案——循既有 slim 隐藏文字体系（.ws-label 同款） */
+body.slim .shell-hc-status { display: none; }
+.shell-hc-bar {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 8px 16px;
+  background: var(--panel2);
+  border-top: 1px solid var(--bad);
+  color: var(--txt);
+  font-size: 12px;
+}
+.shell-hc-item { line-height: 1.5; color: var(--txt2); }
+.shell-hc-toggle {
+  margin-left: auto;
+  cursor: pointer;
+  color: var(--warn);
+  text-decoration: underline;
+  user-select: none;
+}
+.shell-hc-panel {
+  flex: 1 0 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--line);
+}
+.shell-hc-row { line-height: 1.5; }
+.shell-hc-ok { color: var(--ok); }
+.shell-hc-bad { color: var(--bad); }

@@ -1,0 +1,131 @@
+/*
+ * GUI1.3 设定 TAB 框架 + 14 键表单 CSS
+ * 源：v43 原型（md5=43c85f743cfb8445f63fb8292c3355aa）style 块（S1-2 T2 提取）
+ *
+ * 提取范围（设定 TAB 框架 + 14 键表单相关）：
+ *   - .colfold 折叠列容器（v43 :584）
+ *   - .cf-cap   折叠头（v43 :585-589）
+ *   - .cf-body  折叠体（v43 :590-591）
+ *   - .fgrid    4 列网格（v43 :423, :425）
+ *   - .fg2      14 键字段组（v43 :453）
+ *   - .fg2 select/input + focus（v43 :454-455）
+ *   - .fg-grp-cap / .fg-grp-cap .inh  分组小标题（v43 :427-428）
+ *   - .fg-grp-body / .fg-grp-body label  分组体 4 列网格（v43 :430-432）
+ *   - .badge-future   第5步黄角标（v43 :439）
+ *   - .file-row       T2 增设（音乐文件行；flex 内嵌 vfile + ghostbtn-mini）
+ *
+ * 范围外（归 T3/T4/T5 各自提取）：
+ *   - .sc-* 段卡阵 → T3
+ *   - .res-* / .lora-* / .model-* / .mirror-* / .preset-* → T4
+ *   - .pv-bar / .pv-pre / .refchips 预览拼装 → T5
+ *   - .pws .col 列面板壳（v43 :187；原型 :1217 inline flex/min-width/resize 由 setup.js 承接）
+ *     → 本文件 .setup-col 实装（老板走查批C；此前误记「沿用 theme.css 既有」=失实：theme.css 无此规则）
+ */
+
+/* ===== 折叠列（全局参数组壳）===== */
+.colfold{border:1px solid var(--line);border-radius:12px;background:#0f1114;margin-bottom:10px}
+.cf-cap{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt);padding:10px 12px;cursor:pointer;user-select:none;font-weight:600}
+.cf-cap:hover{color:var(--accent-bright)}
+.cf-cap .inh{font-weight:400}
+.cf-cap .ic{margin-left:auto;transition:transform .15s;color:var(--txt3)}
+.colfold.open .cf-cap .ic{transform:rotate(180deg)}
+.cf-body{display:none;padding:0 10px 10px}
+.colfold.open .cf-body{display:block}
+
+/* ===== R1 ③a D01：fgroup 折叠组（v43 :298-306 逐字）=====
+承接：资源编排组（resources.js .fgroup#resGroup）+ 全局提示词组（prompt.js .fgroup.prompt-global）——
+   两组 open 类切换逻辑已在 JS，此前缺 CSS 致折叠头/体/箭头全靠浏览器默认渲染。 */
+.fgroup{border:1px solid var(--line);border-radius:12px;padding:0 12px;margin-bottom:10px;background:#111317}
+/* 批B 2.1：cap 色 txt3→txt2（#67707a 3.75:1 → #9aa3ad 7.4:1 · 老板体验裁决；资源编排组 + 全局提示词组同享） */
+.fg-cap{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt2);letter-spacing:1px;padding:9px 0;cursor:pointer;user-select:none}
+.fg-cap:hover{color:var(--txt2)}
+.fg-cap .icw{margin-left:auto;display:inline-flex;color:var(--txt3);transition:transform .15s}
+.fgroup.open .fg-cap .icw{transform:rotate(180deg)}
+.fg-body{display:none;padding-bottom:10px}
+.fgroup.open .fg-body{display:block}
+/* v39（v43 :306）：全局提示词组与资源编排/分镜表组左右缘对齐（差值=colfold 边框 1px + cf-body padding 10px → 左右各 11px，合计 22px） */
+#gcol + .fgroup{margin-left:11px;margin-right:11px}
+
+/* ===== R1 ③a D03：textarea.gp 全局样式（v43 :328 逐字）===== */
+textarea.gp{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);font-size:12px;padding:8px 10px;resize:vertical;min-height:72px;outline:none;font-family:inherit;line-height:1.5}
+/* R8 · R1 遗留：focus 态补规则（v43 :329 一行） */
+textarea.gp:focus{border-color:var(--accent-bright)}
+
+/* ===== R8 · ③b #001：分镜表 savestamp（v43 :357 逐字 · cf-cap 内 icw 之前）===== */
+.savestamp{margin-left:auto;font-size:12px;color:var(--ok);display:inline-flex;align-items:center;gap:4px}
+
+/* ===== v33 W-B1：4 列贯穿+统一 gutter 14px（设定 TAB 14 键表）===== */
+.fgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 14px;margin:2px 0 4px}
+/* v31 W8：窄窗回退 3 列（演示级） */
+@media (max-width:1180px){ .fgrid{grid-template-columns:repeat(3,minmax(0,1fr))} }
+
+/* ===== v13 增补（全局参数网格化）===== */
+.fg2{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--txt3)}
+.fg2 select,.fg2 input{width:100%;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;color:var(--txt);font-size:12px;outline:none;font-family:inherit}
+.fg2 select:focus,.fg2 input:focus{border-color:var(--accent-bright)}
+
+/* ===== v33 W-B2：复选框分两组带小标题+组分隔线 ===== */
+.fg-grp-cap{font-size:12px;color:var(--txt3);letter-spacing:.5px;margin:8px 0 4px;padding-bottom:3px;border-bottom:1px dashed #2a2e35}
+.fg-grp-cap .inh{font-size:11px;color:var(--txt3);margin-left:6px;font-weight:400}
+/* v38：复选框行纳入与 .fgrid 同宽的 4 列网格 */
+.fg-grp-body{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 14px;align-items:center;font-size:12px;color:var(--txt2);padding:2px 0 6px}
+.fg-grp-body label{display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap;min-width:0}
+@media (max-width:1180px){ .fg-grp-body{grid-template-columns:repeat(3,minmax(0,1fr))} }
+
+/* ===== v31 W7：第5步黄角标 ===== */
+.badge-future{font-size:12px;color:#ffd76a;border:1px solid #7a5b2b;background:#221c10;border-radius:8px;padding:0 5px;margin-left:3px;letter-spacing:0}
+
+/* ===== T2 增设：音乐文件行（vfile + ghostbtn-mini 并列） ===== */
+.file-row{display:flex;gap:6px;align-items:center;width:100%;min-width:0}
+
+/* ===== T2 增设：设定视图外壳（占位） ===== */
+.setup-view{padding:0}
+/* ===== 老板走查批C：列面板壳（v43 :187 逐字；min-width/resize 两项被 setup.js:318 inline 压制·声明保留）===== */
+.setup-col{display:flex;flex-direction:column;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;overflow:auto;min-width:130px;resize:horizontal}
+
+/* ===== 批 R6 #021/#022/#023：分镜表下方四块（v43 :330-341 / :358-363 / :711-713 逐字照搬）=====
+   .fbx 提交链检查（可折叠 + chkline okk/warn 双态）/ .poolbar 素材池（.pill 药丸）
+   .psummary 运行概要 / .pv-box 提示词预览。归属本视图四块（pvbox.js），故落 setup.css。 */
+
+/* .fbx 族（v43 :330-337；margin-top:8px = 老板走查批C 补·原型无此声明 → 概要→提交链检查不贴边） */
+.fbx{border:1px solid var(--line);border-radius:12px;background:#111317;margin-top:8px;margin-bottom:10px}
+/* 登记项 4（批B 2.1 扩展）：提交链检查 cap 同款 txt3→txt2（#67707a 3.75:1 → #9aa3ad 7.4:1 · 与 .fg-cap 同口径） */
+.fbx-cap{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt2);letter-spacing:1px;cursor:pointer;padding:9px 12px;user-select:none}
+.fbx-cap:hover{color:var(--txt2)}
+.fbx-cap .icw{margin-left:auto;display:inline-flex}
+.fbx-cap .ic{transition:transform .15s}
+.fbx.open .fbx-cap .ic{transform:rotate(180deg)}
+.fbx-body{display:none;padding:0 12px 10px;font-size:12px;color:var(--txt2)}
+.fbx.open .fbx-body{display:block}
+/* chkline 双态（v43 :338-341） */
+.chkline{display:flex;gap:8px;margin-bottom:5px;align-items:flex-start}
+.chkline.warn{color:var(--warn)}
+.chkline.err{color:var(--bad)}
+.chkline.okk{color:var(--txt3)}
+
+/* .poolbar / .pill 族（v43 :358-362） */
+.poolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--txt2);padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#111317}
+.pill{border:1px solid var(--line);border-radius:12px;padding:1px 8px;white-space:nowrap}
+.pill .ref{color:var(--accent-bright);font-weight:600}
+.pill.dragchip{cursor:grab;user-select:none}
+.pill.dragchip:active{cursor:grabbing}
+
+/* .psummary（v43 :363） */
+.psummary{margin-top:8px;font-size:12px;color:var(--txt3);display:flex;gap:14px;flex-wrap:wrap}
+
+/* .pv-box 族（v43 :711-713） */
+.pv-box{border:1px solid var(--line);border-radius:12px;background:#0d0e10;margin-top:10px;overflow:hidden;flex-shrink:0}
+.pv-box .hd{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12px;color:var(--txt3);letter-spacing:1px;border-bottom:1px solid var(--line)}
+.pv-box .bd{padding:10px 12px;font-size:12px;line-height:1.7;color:#c6d4de;max-height:110px;overflow:auto;user-select:text}
+
+/* 批 8 T5：G3 手动槽胶囊族（.poolslots 三 kind 槽位行——占用/空态/绑定标记/来源徽标/清除钮） */
+.poolslots{flex:1 1 100%;display:flex;flex-direction:column;gap:4px}
+.poolslot-row{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.poolslot-kind{color:var(--txt3);font-size:11px;min-width:2.5em}
+.poolslot{display:inline-flex;align-items:center;gap:4px;min-height:20px;min-width:22px;justify-content:center;border:1px solid var(--line);border-radius:8px;padding:1px 6px;font-size:11px;color:var(--txt3)}
+.poolslot.is-occupied{border-color:var(--accent-bright);color:var(--txt2)}
+.poolslot.is-binding{border-style:dashed;border-color:#f9a825}
+.poolslot-owner{color:var(--accent-bright);font-size:10px;white-space:nowrap}
+.poolslot-bind{color:#f9a825;font-size:10px;white-space:nowrap}
+.poolslot-clear{cursor:pointer;color:var(--txt3);font-size:12px;line-height:1;padding:0 2px}
+.poolslot-clear:hover{color:var(--bad)}

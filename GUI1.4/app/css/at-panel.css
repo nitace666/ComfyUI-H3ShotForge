@@ -1,0 +1,48 @@
+/*
+ * GUI1.3 @ 联想浮窗 + 预览拼装容器 CSS
+ * 源：v43 原型（md5=43c85f743cfb8445f63fb8292c3355aa）style 块（S1-2 T5 提取）
+ *
+ * 提取范围：
+ *   - #atPanel 浮窗壳（v43 :518）            —— 口径 ① ② ④ ⑥ 容器
+ *   - #atPanel .at-hd 浮窗头（v43 :519）     —— 口径 ⑤ 标题
+ *   - .at-row 浮窗行（v43 :520-523）         —— 口径 ⑤ 行布局 + 选中态 + 角标 + 类型徽
+ *   - .pv-bar 预览条（v43 :716-724）         —— 折叠两态 · 含 refchips / rchip / thumb
+ *   - .pv-pre 预览体（v43 :725-729）         —— 折叠隐藏 + show 时显形 + note 头
+ *
+ * 范围外：
+ *   - .thumb / .th-*  已在 theme.css（v43 :191-194）：人物/场景/道具/音频 4 种缩略图形态
+ *   - .at-th          已在 theme.css（v43 :195）：浮窗行缩略图 32×32 框
+ *
+ * 验收 #5：CSS 提取忠实抽 5 条逐字比对（at-panel 7 行独立规则 + pv 14 行）
+ */
+
+/* ===== v43 :518 #atPanel ===== */
+#atPanel{position:fixed;z-index:130;display:none;background:var(--panel);border:1px solid var(--line);border-radius:12px;width:300px;max-height:250px;overflow:auto;box-shadow:0 10px 30px #000a}
+
+/* ===== v43 :519 #atPanel .at-hd ===== */
+#atPanel .at-hd{font-size:12px;color:var(--txt3);letter-spacing:1px;padding:7px 10px 4px;position:sticky;top:0;background:var(--panel)}
+
+/* ===== v43 :520-523 .at-row ===== */
+.at-row{display:flex;gap:8px;align-items:center;padding:7px 10px;font-size:12px;cursor:pointer;border-bottom:1px solid #20232a}
+.at-row:last-child{border-bottom:none}
+.at-row:hover{background:#24272d}
+.at-row .no{color:var(--accent-bright);font-weight:600;width:28px;flex-shrink:0}
+.at-row .kd{margin-left:auto;color:var(--txt3);font-size:12px;flex-shrink:0}
+
+/* ===== v43 :716 .pv-bar ===== */
+.pv-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;background:#101216;padding:6px 10px;margin-top:6px;cursor:pointer;font-size:12px;color:var(--txt3);user-select:none}
+.pv-bar:hover{border-color:#33363d;color:var(--txt2)}
+.pv-bar .tag{font-size:11px;letter-spacing:1px;flex-shrink:0}
+.pv-bar .refchips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pv-bar .refchips:empty{display:none}
+.pv-bar .refchips .rchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:2px 8px 2px 4px;color:var(--txt2);font-size:12px;background:#0d0e10}
+.pv-bar .refchips .rchip .thumb{width:18px;height:18px;border-radius:8px;color:transparent;flex-shrink:0}
+.pv-bar .refchips .rchip .nm{color:var(--txt)}
+.pv-bar .arr{margin-left:auto;font-size:11px;color:var(--txt3)}
+
+/* ===== v43 :725 .pv-pre ===== */
+.pv-pre{display:none;margin-top:4px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#0a0c0e;color:#aab8c2;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:1.7;white-space:pre-wrap;max-height:160px;overflow:auto;user-select:text}
+.pv-pre.show{display:block}
+.pv-pre .note{display:block;color:var(--txt3);font-family:inherit;font-size:11px;margin-bottom:6px;letter-spacing:.5px}
+.pv-pre .refline{color:#9bd1c5}
+.pv-pre .gpline{color:var(--txt3)}

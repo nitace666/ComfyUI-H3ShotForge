@@ -1,0 +1,8 @@
+data/
+.tmp/
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
+交接文档-*.md
+开发账本/

@@ -1,0 +1,124 @@
+/*
+ * GUI1.3 设置页样式 (S1-2 T7 实装包 · 批 R4 对齐 v43 :1731-1795)
+ * 源：v43 原型（md5=43c85f743cfb8445f63fb8292c3355aa）#view-config 区段 + 顶栏三态芯片
+ * 提取范围（R4 后）：
+ *   - #view-config>.fillpanel 页面内层包装（:754 逐字 · 域内限定不外溢）
+ *   - .cfgsec / .cfgsec>.cap 分组（:634-635 逐字 · J5 裁决还原纯文字形态）
+ *   - .pathrow / .k / .v / select 行式（:636-639 逐字）
+ *   - .tpl-row + .cfg-tpl-ta 模板三 textarea（:1763-1771 · B29 min-height:60px）
+ *   - .cfg-cf-* ComfyUI 区（C1 引擎版本行 + 启动参数 input :1755 形态）
+ *   - .eng-lamp 三态灯（B34 8px 对齐 :175 · B35 发光保留 · 与顶栏 #engChip 同源）
+ *   - #engChip 顶栏三态芯片（C9 · v41 实装）
+ *   - .ai-arch-row 归档行 + .dangerbtn-mini（批 R5 迁入 AI 页左栏折叠区 · 行结构保留）
+ *   - .ai-* AI 协作页样式族（批 R5 · v43 :561-569/:995-996/:1022-1031/:322-326 逐字 ·
+ *     选型：并入本文件而非新建 ai.css —— index.html 链接清单不在任务单边界内）
+ * .proj-top / .proj-top h2 由 projects.css 全站提供（:72-73 · B2 17px 由此接管）；
+ * 按钮/cbox/inh/num 基础件沿用 theme.css（不重复声明）。
+ * R4 移除：.cfg-h2(18px) / .cfg-grp 卡片族 / .cfg-chk 开关族 / .cfg-migrate-* /
+ *          .cfg-lamp-wrap / .cfg-cf-actions / 占位徽标（A4-A12 转正后无占位组）。
+ * R5 移除：.cfg-archive-slot / .cfg-pending-note / .ai-archive / .ai-arch-h3 /
+ *          .ai-arch-actions / .ai-arch-list / .ai-arch-empty（归档组迁出设置页）。
+ */
+
+/* ===== 页面内层包装（v43 :754 逐字 · 选择器域内限定） ===== */
+#view-config>.fillpanel{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;overflow:auto}
+
+/* ===== 分组（v43 :634-635 逐字 · J5 还原原型纯文字 cap） ===== */
+.cfgsec{margin-bottom:26px}
+.cfgsec>.cap{font-size:12px;color:var(--txt3);letter-spacing:2px;margin-bottom:10px}
+
+/* ===== 行式（v43 :636-639 逐字） ===== */
+.pathrow{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:8px;font-size:13px;flex-wrap:wrap}
+.pathrow .k{width:104px;color:var(--txt2);flex-shrink:0}
+.pathrow .v{flex:1;min-width:180px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pathrow select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;color:var(--txt);font-size:12px;outline:none;min-width:220px}
+
+/* ===== ① 提示词模板（v43 :1763-1771 · B27-B33） ===== */
+.pathrow.tpl-row{align-items:flex-start}
+.tpl-row .k{padding-top:8px}
+.tpl-row .fbtn{flex-shrink:0;margin-top:8px}
+.cfg-tpl-ta{
+  flex:1;min-height:60px;resize:vertical;background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+  padding:6px 8px;font-size:12px;color:var(--txt);font-family:inherit;outline:none;line-height:1.5
+}
+.cfg-tpl-ta:focus{border-color:var(--accent-bright)}
+
+/* ===== ② 提醒与恢复 · 迁移两次确认 armed 态（原 .cfg-migrate-row 覆盖 → 随行式迁移） ===== */
+.pathrow .ghostbtn.armed{color:var(--warn);border-color:var(--warn)}
+
+/* ===== ③ ComfyUI 引擎指向 ===== */
+.cfg-cf-args{display:flex;flex-direction:column;gap:4px}
+.cfg-cf-lbl{font-size:12px;color:var(--txt3);font-weight:600}
+/* 启动参数 input（v43 :1755 内联样式类化 · flex 单行随 pathrow） */
+.cfg-cf-input{flex:1;min-width:220px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;color:var(--txt);font-size:12px;outline:none;font-family:inherit}
+/* 引擎状态文字（B12 承载 cfState id · 状态 · baseUrl） */
+.cfg-lamp-label{font-size:12px;color:var(--txt3);font-variant-numeric:tabular-nums}
+
+/* 三态灯（B34: 8×8 对齐 v43 :175 .lamp；B35: 发光保留） */
+.eng-lamp{
+  display:inline-block;width:8px;height:8px;border-radius:50%;
+  box-shadow:0 0 6px currentColor;flex-shrink:0
+}
+.eng-lamp-idle{background:var(--txt3);color:var(--txt3)}
+.eng-lamp-warn{background:var(--warn);color:var(--warn)}
+.eng-lamp-ok{background:var(--ok);color:var(--ok)}
+/* 灯位留白：端口行 :1747 margin:0 4px 0 0；状态行 cfLamp :1756 margin-right:6px（id 高优先级） */
+.pathrow .v .eng-lamp{margin:0 4px 0 0}
+#cfLamp{margin-right:6px}
+
+/* 顶栏三态芯片 #engChip（C9 · v41 实装 · 不在 #view-config 内） */
+#engChip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--txt2);cursor:pointer;
+  padding:4px 10px;border:1px solid var(--line);border-radius:14px;
+  background:var(--panel2);transition:background .15s,border-color .15s
+}
+#engChip:hover{background:var(--panel);border-color:var(--accent-bright)}
+#engChip .eng-lamp{width:10px;height:10px}
+#engChip .eng-chip-text{font-variant-numeric:tabular-nums}
+#engChip.eng-chip-starting .eng-chip-text{color:var(--warn)}
+#engChip.eng-chip-connected .eng-chip-text{color:var(--ok)}
+#engChip.eng-chip-idle .eng-chip-text{color:var(--txt3)}
+
+/* ===== AI 归档行（批 R5：随归档组迁至 AI 页左栏 .ai-arch-bd 内 · 行结构保留） ===== */
+.ai-arch-row{
+  display:flex;align-items:center;gap:10px;padding:8px 12px;
+  background:var(--panel2);border:1px solid var(--line);border-radius:8px
+}
+.ai-arch-meta{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.ai-arch-title{font-size:13px;color:var(--txt);font-weight:600}
+.ai-arch-sub{font-size:11px;color:var(--txt3);font-variant-numeric:tabular-nums}
+.ai-arch-ops{display:flex;gap:6px;flex-shrink:0}
+
+/* danger 按钮迷你态（与 ghostbtn-mini 同款基底） */
+.dangerbtn-mini{
+  border:1px solid #4a2a2a;color:#d98c8c;border-radius:8px;
+  padding:3px 10px;font-size:12px;cursor:pointer;background:#1a1212;
+  white-space:nowrap
+}
+.dangerbtn-mini:hover{color:#ff9a9a;border-color:var(--bad)}
+.dangerbtn-mini.armed{color:var(--warn);border-color:var(--warn)}
+
+/* ===== 批 R5 · AI 协作页（v43 #view-ai :1693-1728 · CSS 逐字） ===== */
+/* :561-569 双栏 + 消息气泡 + 输入区 */
+.ai-wrap{display:flex;gap:12px;flex:1;min-height:420px}
+.ai-l{width:220px;flex-shrink:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;overflow:auto}
+.ai-r{flex:1;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;min-width:0}
+.ai-msgs{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:72%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.6}
+.msg.u{align-self:flex-end;background:#12414a;color:#dff5f5}
+.msg.a{align-self:flex-start;background:var(--panel2);color:var(--txt)}
+.ai-input{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+/* :995-996 输入框顶部 8px 拖拽条 */
+.ai-drag{display:block;height:8px;cursor:ns-resize;background:var(--panel2);border:1px solid var(--line);border-bottom:0;border-radius:8px 8px 0 0}
+.ai-drag:hover,.ai-drag.on{background:#10333a;border-color:var(--accent-bright)}
+/* :322-326 会话条目 + :1022-1031 归档折叠区 */
+.preset{display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;font-size:12px;cursor:pointer}
+.preset:hover{border-color:var(--accent-bright)}
+.preset .nm{flex:1}
+.preset.on{border-color:var(--accent-bright)}
+.ai-arch{margin-top:10px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.ai-arch-hd{display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:12px;color:var(--txt2);cursor:pointer;background:var(--panel2)}
+.ai-arch-hd:hover{color:var(--txt)}
+.ai-arch-bd{display:none;padding:6px 8px}
+.ai-arch.open .ai-arch-bd{display:block}

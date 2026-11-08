@@ -1,0 +1,274 @@
+/* GUI1.3 创作画布视图样式 (S1-4 任务 T3)
+ *
+ * === 出处注记 (S1-4 取用纪律) ===
+ * 自 v43 原型画布 CSS 转正改写 (布局示意-项目工作区交互原型-v43-2026-09-24.html):
+ *   :758-768  .cb-root/.cb-stage/.cb-wires/.cb-wire/.cb-hint/.cb-reset
+ *   :769-780  .cb-zoombox + .cb-help (折叠条)
+ *   :782-797  .cnode 全家族 (含 .cnode-hd/.cnode-thumb/.cnode-foot)
+ *   :799-813  .cnode.global (300px + 14 键镜像 + 全局提示词 textarea)
+ *   :814-817  .cnode.seg (220px)
+ *   :819-821  .cnode.asset (170px)
+ *   :823-833  .cn-future + .cb-wire.global-ref + .cb-pend + .cnode.asset.orphan
+ *   :846-878  .cnode.proc + .sr-toggle + .interp-fps-row + .sr-res-row
+ *   :880-887  .cb-port + .cb-dragwire + .cb-port-target
+ *   :889-908  .cb-port-in + .cb-wire.dataflow + .cnode-title + .proc-adv
+ *   :916-919  .interp-fps-row
+ *   :926-930  .out-chain / .ic-chip
+ *   :939-979  .cnode.preview (240px) + .pv-progress + .cnode-preview-max + .pv-modal
+ * v43 本体永不修改; 行为基准 = docs\v43-行为基线清单.md E 节.
+ */
+
+/* ===== 画布容器 ===== */
+.cb-wrap{display:flex;flex-direction:column;flex:1;min-height:0;height:100%}
+.cb-topbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:10px}
+.cb-topbar h2{margin:0;font-size:15px;font-weight:600;color:var(--txt);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cb-topbar .btn-tool{cursor:pointer;font-size:12px}
+.cb-topbar .btn-tool.dim{opacity:.4;pointer-events:none}
+
+/* 画布根容器（点阵底·grab · 平移/缩放/滚轮/右键 4 入参绑在此）*/
+.cb-root{position:relative;flex:1;min-height:0;height:100%;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:radial-gradient(#1b1e23 1px,transparent 1px);background-size:22px 22px;background-color:#101216;cursor:grab}
+.cb-root.panning{cursor:grabbing}
+.cb-stage{position:absolute;left:0;top:0;width:3200px;height:2400px;transform-origin:0 0;will-change:transform}
+.cb-wires{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.cb-wire{fill:none;stroke:var(--accent);stroke-width:1.5;opacity:.55;pointer-events:stroke;cursor:pointer}
+.cb-wire.global{stroke:#38b6c4;opacity:.7}
+/* R-37：global-ref 细虚线 → 实线提亮（与 global 广播线同档 1.5/.70·同为 G 系青；色相区分交给 dataflow） */
+.cb-wire.global-ref{stroke:#38b6c4;stroke-width:1.5;opacity:.7}
+.cb-wire.dataflow{fill:none;stroke:var(--accent-bright);stroke-width:1.8;opacity:.65;color:var(--accent-bright)}
+
+/* 三层原则折叠提示（v43 :774-780） */
+.cb-help{position:absolute;left:14px;top:10px;background:var(--panel);border:1px solid var(--line);border-radius:8px;font-size:12px;z-index:4;overflow:hidden;max-width:340px;color:var(--txt)}
+.cb-help-hd{padding:6px 12px;cursor:pointer;color:var(--txt2);display:flex;align-items:center;gap:6px}
+.cb-help-hd:hover{color:var(--txt)}
+.cb-help-bd{display:none;padding:0 12px 8px;color:var(--txt3);line-height:1.6}
+.cb-help.open .cb-help-bd{display:block}
+.cb-help .cb-help-arrow{transition:transform .15s;margin-left:auto;font-size:12px}
+.cb-help.open .cb-help-hd .cb-help-arrow{transform:rotate(180deg)}
+
+.cb-hint{position:absolute;left:50%;top:10px;transform:translateX(-50%);font-size:12px;color:var(--txt3);background:#16181bcc;border:1px solid var(--line);border-radius:8px;padding:4px 10px;pointer-events:none;z-index:4}
+
+/* 复位视图按钮（v43 :766 浮层右下；bottom 由原型 10px 上调至 46px——原型值下该钮与
+   .cb-zoombox（bottom:14px + 控件高 · z-index:6）完全重叠被遮盖，GUI 上调避让以保按钮可点） */
+.cb-reset{position:absolute;right:10px;bottom:46px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:5px 12px;font-size:12px;color:var(--txt2);cursor:pointer;display:inline-flex;align-items:center;gap:6px;z-index:5}
+.cb-reset:hover{color:var(--txt);border-color:var(--accent-bright)}
+
+/* 右下缩放控件组（v43 :769-773） */
+.cb-zoombox{position:absolute;right:14px;bottom:14px;display:inline-flex;align-items:center;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px 6px;font-size:12px;color:var(--txt2);z-index:6}
+.cb-zoombox button{background:transparent;border:1px solid var(--line);border-radius:6px;color:var(--txt2);padding:2px 8px;cursor:pointer;font-size:13px;line-height:1.2;font-family:inherit}
+.cb-zoombox button:hover{color:var(--txt);border-color:var(--accent-bright)}
+.cb-zoombox .cb-zoom-pct{min-width:48px;text-align:center;color:var(--txt);font-variant-numeric:tabular-nums;padding:0 4px}
+.cb-zoombox .cb-zoom-sep{width:1px;height:14px;background:var(--line);margin:0 2px}
+
+/* ===== 节点全家族（v43 :782-797） ===== */
+.cnode{position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.5;cursor:grab;user-select:none}
+/* 走查反馈⑥：节点大小可调（右下角拖柄·长文字不再被迫换行）；最小宽防挤坏布局
+   批 10-L F79①：删原生 resize:both/overflow:auto——原生命柄被节点移动拖拽接管（拖手柄=拖节点·
+   老板「拖动是移动而不是缩放」）、命中区极小（「手柄区域过小」）、原生改的尺寸重建即丢
+   （renderNodeById 重建·n.data 无 w/h）。改自定义 .cnode-rs 手柄（尺寸数据化落 n.data.w/h）。
+   .cnode.global textarea.gp 的 resize:vertical（:103）保留不动。 */
+.cnode{overflow:hidden;min-width:260px;min-height:120px;max-width:640px}
+/* 自定义缩放手柄：右下角 16×16 视觉 + ::after 扩到 22×22 热区 */
+.cnode-rs{position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;z-index:2}
+.cnode-rs::after{content:"";position:absolute;right:-3px;bottom:-3px;width:22px;height:22px}
+.cnode-rs::before{content:"";position:absolute;right:2px;bottom:2px;width:8px;height:8px;border-right:2px solid var(--txt3);border-bottom:2px solid var(--txt3);border-bottom-right-radius:3px;opacity:.55}
+.cnode-rs:hover::before{opacity:1;border-color:var(--accent-bright)}
+.cnode.resizing{box-shadow:0 6px 20px #000a}
+.cnode textarea,.cnode input{cursor:text}
+.cnode:hover{border-color:#3d4a5c}
+.cnode.dragging{cursor:grabbing;border-color:var(--accent-bright);box-shadow:0 6px 20px #000a;z-index:3}
+/* R-36 选中态描边（醒目度对齐剪辑区 .clip.sel 选中档：outline 3px + 提亮） */
+.cnode.sel{outline:3px solid var(--accent-bright);outline-offset:-3px;filter:brightness(1.14)}
+.cnode-hd{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.cnode-hd .lbl{font-size:13px;font-weight:600;color:var(--txt)}
+.cnode-hd .badge{font-size:12px;border-radius:8px;padding:1px 7px;border:1px solid;white-space:nowrap;font-weight:600}
+.cnode-hd .st-ok,.cnode-hd .st-bad,.cnode-hd .st-wait,.cnode-hd .st-run{font-size:12px;white-space:nowrap}
+.cnode-thumb{height:54px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--txt2);margin-bottom:6px}
+/* 插播修复（老板 2026-10-09「缩略图横向细长条且截断严重」）：素材节点缩略图改方形比例+完整显示——
+   54px 定高×170 定宽=3.15:1 细长条 + cover 截竖图；1:1 + contain 不截任何比例，横竖图由色块渐变底兜边 */
+.cnode.asset .cnode-thumb{aspect-ratio:1/1;height:auto}
+.cnode-thumb.th-person{background:linear-gradient(180deg,#e8d5c4 0 38%,#c9a08a 38% 42%,#9db4d8 42% 78%,#3a4a66 78%);color:transparent}
+.cnode-thumb.th-scene{background:linear-gradient(180deg,#7db4d8 0 44%,#cfe3ee 44% 54%,#e8d9b8 54% 80%,#d8c9a4 80%);color:transparent}
+.cnode-thumb.th-prop{background:linear-gradient(135deg,#9aa5b4 0 50%,#4a5568 50%);color:transparent}
+.cnode-thumb.th-audio{background:linear-gradient(135deg,#32404e,#1a2129);color:transparent}
+.cnode .ref{color:var(--accent-bright);font-weight:600}
+.cnode-foot{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12px;color:var(--txt3)}
+.cnode-foot .num{font-variant-numeric:tabular-nums}
+
+/* 全局节点（v43 :799-813 · 300px · 14 键镜像） */
+.cnode.global{width:300px;background:var(--panel);border-color:#244952}
+.cnode.global .role{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--accent-bright);border:1px solid var(--accent-deep);background:#0f2a30;border-radius:8px;padding:1px 8px;margin-bottom:6px;line-height:1.6;white-space:nowrap;max-width:100%}
+.cnode.global .kvgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;margin:6px 0 8px;font-size:12px}
+.cnode.global .kvgrid .k{color:var(--txt3)}
+.cnode.global .kvgrid .v{color:var(--txt)}
+.cnode.global .expand{display:block;width:100%;text-align:center;font-size:12px;color:var(--txt2);border:1px dashed #33363d;border-radius:8px;padding:4px 0;background:transparent;cursor:pointer;margin-top:4px}
+.cnode.global .expand:hover{color:var(--txt);border-color:var(--accent-bright)}
+.cnode.global .full{display:none;margin-top:6px;border-top:1px dashed #2a2e35;padding-top:6px;font-size:12px;color:var(--txt2)}
+.cnode.global .full.show{display:block}
+.cnode.global .full .krow{display:flex;justify-content:space-between;align-items:center;padding:2px 0;border-bottom:1px solid #20232a;gap:6px}
+.cnode.global .full .krow:last-child{border-bottom:none}
+.cnode.global .full .kk{color:var(--txt3);flex:0 0 64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cnode.global .full .cbox,.cnode.global .full input[type=text]{min-width:0;max-width:148px;flex:1}
+.cnode.global .full .cbox{font-size:12px}
+.cnode.global .full .cb-v{font-size:12px}
+.cnode.global .full .cb-in{font-size:12px;width:118px}
+.cnode.global .full .krow label{display:flex;align-items:center;gap:6px;cursor:pointer;justify-content:flex-start}
+.cnode.global .full .krow label .kk{flex:1}
+.cnode.global .full .krow input[type=number]{width:80px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:4px 6px;font-size:12px;outline:none}
+.cnode.global textarea.gp{width:100%;margin-top:6px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);font-size:12px;padding:6px 8px;resize:vertical;min-height:52px;outline:none;font-family:inherit;line-height:1.5;cursor:text;box-sizing:border-box}
+.cnode.global textarea.gp:focus{border-color:var(--accent-bright)}
+
+/* 段节点（v43 :814-817 · 220×130） */
+.cnode.seg{width:220px}
+.cnode.seg .pcard-prompt{margin-top:4px;font-size:12px;color:#c6d4de;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;max-width:100%}
+.cnode.seg:hover{border-color:var(--accent-bright)}
+
+/* 资产节点（v43 :819-821 · 170px） */
+.cnode.asset{width:170px}
+.cnode.asset .atno{color:var(--accent-bright);font-weight:600;font-size:13px}
+.cnode.asset .atname{font-size:13px;color:var(--txt);margin-top:2px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+
+/* orphan 弱化（v43 :832-833） */
+.cnode.asset.orphan{opacity:.55;position:relative}
+.cnode.asset.orphan::after{content:'无引用';position:absolute;top:-7px;right:-7px;background:#1a1d22;color:var(--txt3);font-size:12px;border-radius:8px;padding:1px 6px;border:1px solid var(--line);line-height:1.4;pointer-events:none}
+html[data-lang=en] .cnode.asset.orphan::after{content:'No references'}   /* #89 T6：en 语言模式覆盖（data-lang 由 index.html boot/setLang 置）*/
+
+/* 处理节点（v43 :848-878） */
+.cnode.proc{width:210px;background:#1a1410;border-color:#7a5b2b}
+.cnode.proc:hover{border-color:#ffd76a}
+.cnode.proc .cnode-hd{display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:nowrap}
+.cnode.proc .badge.b-proc-interp{color:#7ec9ff;border-color:#2b5d8a;background:#14202e}
+.cnode.proc .badge.b-proc-sr{color:#ffd76a;border-color:#7a5b2b;background:#221c10}
+.cnode.proc .proc-title{font-size:13px;font-weight:600;margin:2px 0 6px;color:var(--txt)}
+.cnode.proc .proc-head-summary{font-size:12px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1;line-height:1.5}
+.cnode.proc .proc-targets{font-size:12px;color:var(--txt2);margin-top:6px;padding-top:6px;border-top:1px dashed #2a2e35}
+.cnode.proc .proc-targets b{color:var(--accent-bright);font-weight:600}
+.cnode.proc .proc-updown{font-size:12px;color:var(--txt2);margin-top:6px;padding-top:6px;border-top:1px dashed #2a2e35;line-height:1.5;word-break:break-all}
+.cnode.proc .proc-adv-t{display:flex;align-items:center;justify-content:space-between;margin-top:6px;font-size:12px;color:var(--txt2);cursor:pointer;padding:4px 8px;border:1px dashed #2a2e35;border-radius:8px;background:transparent;user-select:none}
+.cnode.proc .proc-adv-t:hover{color:var(--txt);border-color:var(--accent-bright)}
+.cnode.proc .proc-adv-t.open{border-style:solid;border-color:#7a5b2b;color:#ffd76a}
+.cnode.proc .proc-adv{display:none;margin-top:6px;padding:8px;border-top:1px dashed #2a2e35}
+.cnode.proc .proc-adv.show{display:block}
+
+/* SR 节点内嵌两模态选项卡 */
+.cnode.proc.proc-sr .sr-toggle{display:flex;gap:5px;margin:6px 0 4px}
+.cnode.proc.proc-sr .sr-opt{flex:1;border:1px solid var(--line);border-radius:8px;padding:5px 6px;font-size:12px;color:var(--txt2);cursor:pointer;background:var(--panel2);line-height:1.35;text-align:center}
+.cnode.proc.proc-sr .sr-opt small{color:var(--txt3);font-size:12px;display:block;margin-top:1px}
+.cnode.proc.proc-sr .sr-opt:hover{border-color:#ffd76a;color:var(--txt)}
+.cnode.proc.proc-sr .sr-opt.on{border-color:#ffd76a;color:#ffd76a;background:#221c10}
+.cnode.proc.proc-sr .sr-note{font-size:12px;color:var(--txt3);margin-top:2px}
+.cnode.proc .sr-res-row{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;line-height:1.5}
+.cnode.proc .sr-res-label{color:var(--txt3);flex-shrink:0}
+.cnode.proc .sr-res-input{flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:4px 6px;font-size:12px;outline:none;font-variant-numeric:tabular-nums}
+.cnode.proc .sr-res-input:focus{border-color:var(--accent-bright)}
+.cnode.proc .sr-res-unit{color:var(--txt3);font-size:12px;font-variant-numeric:tabular-nums;flex-shrink:0}
+
+/* 插帧：目标帧率选择行 */
+.cnode.proc .interp-fps-row{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:12px;line-height:1.5;flex-wrap:nowrap}
+.cnode.proc .interp-fps-label{color:var(--txt3);flex-shrink:0}
+.cnode.proc .interp-fps-sel{flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:4px 6px;font-size:12px;outline:none}
+.cnode.proc .interp-fps-hint{color:var(--txt3);font-size:12px;flex-shrink:0}
+
+/* 段节点出链摘要（v43 :926-930） */
+.cnode.seg .out-chain{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;padding-top:6px;border-top:1px dashed #2a2e35;font-size:12px;color:var(--txt3);line-height:1.6;align-items:center}
+.cnode.seg .out-chain .ic-chip{background:#221c10;border:1px solid #7a5b2b;color:#ffd76a;border-radius:8px;padding:0 6px;font-size:12px;display:inline-flex;align-items:center;gap:3px;line-height:1.6;white-space:nowrap;flex-shrink:0}
+.cnode.seg .out-chain .ic-chip.interp{background:#14202e;border-color:#2b5d8a;color:#7ec9ff}
+.cnode.seg .out-chain .ic-chip.preview{background:#0f2530;border-color:#1f4654;color:#7ec9ff}
+.cnode.seg .out-chain .ic-chip b{font-weight:600;font-variant-numeric:tabular-nums}
+
+/* proc 第5步黄角标（v43 :932-933） */
+.cnode.proc .cn-future{position:relative;margin-top:6px;height:6px}
+.cnode.proc .cn-future::after{content:attr(data-step);position:absolute;top:0;right:-3px;background:#241f12;color:#ffd76a;font-size:12px;padding:0 5px;border-radius:8px;border:1px solid #7a5b2b;white-space:nowrap;pointer-events:none;line-height:1.6}
+
+/* proc 未连段时的引导行 */
+.cnode-hint{position:absolute;left:12px;right:12px;bottom:6px;font-size:12px;color:var(--txt3);text-align:center;opacity:.7;pointer-events:none}
+.cnode.proc.orphan .cnode-hint{display:block}
+.cnode.proc:not(.orphan) .cnode-hint{display:none}
+.cnode.proc.orphan{opacity:.85}
+.cnode.proc.orphan::after{content:'无引用';position:absolute;top:-7px;right:-7px;background:#1a1d22;color:var(--txt3);font-size:12px;border-radius:8px;padding:1px 6px;border:1px solid var(--line);line-height:1.4;pointer-events:none}
+html[data-lang=en] .cnode.proc.orphan::after{content:'No references'}   /* #89 T6：en 语言模式覆盖（zh 模式原文零改）*/
+
+/* ===== 节点连接端口（v43 :881-887） ===== */
+.cb-port{position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--panel);border:2px solid var(--accent-bright);cursor:crosshair;z-index:5;transition:transform .12s,box-shadow .12s}
+.cnode:hover .cb-port{transform:translateY(-50%) scale(1.4);box-shadow:0 0 8px #38b6c488}
+.cb-port:active{transform:translateY(-50%) scale(1.6);background:var(--accent-bright)}
+.cb-port.dragging{opacity:.4}
+.cb-dragwire{fill:none;stroke:var(--accent-bright);stroke-width:1.5;stroke-dasharray:4 3;opacity:.85;pointer-events:none}
+.cb-port-target{outline:2px dashed var(--accent-bright);outline-offset:-2px}
+.cb-port-in{position:absolute;left:-5px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);pointer-events:none;z-index:4}
+/* R-37：G 出口装饰点——几何同 .cb-port，系统维持边（G→A/G→S）的纯视觉锚：不可拖不可断 */
+.cb-port-deco{position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--panel);border:2px solid var(--accent-bright);pointer-events:none;z-index:5}
+.cnode.preview .cb-port-in{border-color:#2b5d8a}
+
+/* ===== 标题行 / 状态徽章（v43 :920-924） ===== */
+.cnode-title-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;min-height:20px}
+.cnode-title{font-size:14px;font-weight:600;line-height:1.4;min-width:0;flex-shrink:1}
+.cnode.seg .cnode-hd .st-ok,.cnode.seg .cnode-hd .st-bad,.cnode.seg .cnode-hd .st-wait,.cnode.seg .cnode-hd .st-run{font-size:12px;line-height:1.6;white-space:nowrap;flex-shrink:0}
+.cnode.seg .cnode-foot .cnode-foot-tip{margin-left:auto;color:var(--txt3);font-size:12px;white-space:nowrap;flex-shrink:0}
+.cb-pend{background:#3a2a10;color:#ffd76a;font-size:12px;border-radius:8px;padding:0 7px;border:1px solid #e6b455;line-height:1.6;white-space:nowrap;margin-left:auto;flex-shrink:0}
+
+/* ===== 预览视频节点（v43 :939-979） ===== */
+.cnode.preview{width:240px;background:#131a24;border-color:#1f4654}
+.cnode.preview:hover{border-color:var(--accent-bright)}
+.cnode.preview .cnode-hd .badge.b-preview{color:#7ec9ff;border-color:#2b5d8a;background:#14202e;font-weight:600}
+.cnode-preview-img{position:relative;height:120px;margin:6px 0 4px;border-radius:8px;background:linear-gradient(180deg,#232830,#131820);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--line)}
+.cnode-preview-img .pv-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;background:#000a;border:2px solid #fff9;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#dfe8f2;font-size:18px}
+.cnode-preview-img .pv-play:hover{background:#38b6c455;border-color:var(--accent-bright)}
+.cnode-preview-img .pv-tag{position:absolute;right:5px;bottom:5px;background:#000a;color:#fff;font-size:12px;padding:1px 7px;border-radius:8px}
+.cnode-preview-img .pv-tag.run{color:var(--warn)}
+.cnode-preview-img .pv-tag.bad{color:var(--bad)}
+.cnode-preview-img .pv-empty{font-size:12px;color:var(--txt3);text-align:center;padding:0 18px;line-height:1.5}
+.cnode-preview-img.th-scene{background:linear-gradient(180deg,#7db4d8 0%,#cfe3ee 44%,#e8d9b8 54%,#d8c9a4 80%);color:transparent}
+.cnode-preview-img.th-person{background:linear-gradient(180deg,#e8d5c4 0 38%,#c9a08a 38% 42%,#9db4d8 42% 78%,#3a4a66 78%);color:transparent}
+.cnode-preview-img.th-bad{background:linear-gradient(180deg,#7a3b3b,#3a1c1c);color:#f2c0c0}
+.pv-progress{height:4px;background:#23262c;border-radius:8px;margin-top:5px;overflow:hidden}
+.pv-progress i{display:block;height:100%;width:0;background:var(--accent-bright);border-radius:8px;transition:width .15s linear}
+.pv-progress.running i{animation:pv-prog 8s linear forwards}
+@keyframes pv-prog{from{width:0}to{width:100%}}
+
+/* 最大化按钮（v43 :960-962 · hover 才显） */
+.cnode-preview-max{position:absolute;right:5px;top:5px;width:24px;height:24px;border-radius:8px;background:#000a;color:#fff9;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .15s,background .15s;border:1px solid #0000;font-size:13px}
+.cnode.preview:hover .cnode-preview-max{opacity:1}
+.cnode-preview-max:hover{background:#38b6c455;border-color:var(--accent-bright);color:#fff}
+
+/* ===== pv-modal 最大化弹窗（v43 :964-979） ===== */
+.pv-modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:130}
+.pv-modal.show{display:flex}
+.pv-modal .pv-stage{position:relative;width:780px;max-width:94vw;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;resize:both;overflow:auto;min-width:560px;min-height:420px}
+.pv-modal .pv-stage h3{font-size:14px;font-weight:600;margin:0 0 4px;cursor:move;user-select:none;display:flex;align-items:center;gap:8px}
+.pv-modal .pv-stage .pv-sub{font-size:12px;color:var(--txt2);margin-bottom:14px}
+.pv-modal .pv-frame{position:relative;aspect-ratio:16/9;background:#000;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.pv-modal .pv-frame .pv-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:#000a;border:2px solid #fff9;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#dfe8f2;font-size:26px}
+.pv-modal .pv-frame .pv-play:hover{background:#38b6c455;border-color:var(--accent-bright)}
+.pv-modal .pv-frame .pv-tag{position:absolute;right:10px;bottom:10px;background:#000a;color:#fff;font-size:12px;padding:2px 9px;border-radius:8px}
+.pv-modal .pv-frame .pv-tag.run{color:var(--warn)}
+.pv-modal .pv-frame .pv-tag.bad{color:var(--bad)}
+.pv-modal .pv-toolbar{display:flex;align-items:center;gap:10px;margin-top:10px}
+.pv-modal .pv-toolbar .pv-progress{flex:1;margin-top:0}
+.pv-modal .pv-stage .pv-meta{font-size:12px;color:var(--txt3);margin-top:10px;display:flex;gap:14px;flex-wrap:wrap}
+.pv-modal .pv-x{cursor:pointer;color:var(--txt2);margin-left:auto;display:flex;padding:2px 6px;border-radius:8px;font-size:16px;line-height:1}
+.pv-modal .pv-x:hover{color:var(--txt);background:var(--panel2)}
+
+/* ===== 右键菜单（沿用 pmenu 范式 · v43 ctx-item 系） ===== */
+.cb-menu{position:fixed;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;z-index:120;min-width:200px;box-shadow:0 8px 24px #000a;font-size:12px}
+.cb-menu .ctx-item{padding:6px 10px;border-radius:8px;cursor:pointer;color:var(--txt2);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.cb-menu .ctx-item:hover{background:var(--panel2);color:var(--txt)}
+.cb-menu .ctx-item.danger{color:var(--bad)}
+.cb-menu .ctx-item.danger:hover{background:#3a1c1c;color:#f2c0c0}
+.cb-menu .ctx-sep{height:1px;background:var(--line);margin:4px 2px}
+
+/* mbox 通用（沿用 edit.js 同款） */
+.cb-menu .ctx-item.off{opacity:.4;cursor:not-allowed}
+
+/* proc 折叠条箭头（旋转复用 cb-help 形态） */
+.cnode.proc .proc-adv-arrow{display:inline-flex;align-items:center;font-size:12px;transition:transform .15s}
+.cnode.proc .proc-adv-t.open .proc-adv-arrow{transform:rotate(180deg)}
+
+/* 段节点内嵌段提示词 textarea（E014·画布改段提示词双向写 store） */
+.cnode.seg textarea.seg-prompt{font-family:inherit;line-height:1.5}
+
+/* 段节点右键「连接到段…」小菜单（沿用 v43 #cbSegLinkMenu 范式） */
+.cbox-menu .co{padding:6px 10px;border-radius:8px;color:var(--txt2);cursor:pointer}
+.cbox-menu .co:hover{background:var(--panel2);color:var(--txt)}
+
+/* #92 B5：EN 语言模式段卡脚注提示允许换行（真机 1440 宽截断修复·zh 模式不受影响） */
+html[data-lang="en"] .cnode.seg .cnode-foot .cnode-foot-tip{white-space:normal;flex-shrink:1;text-align:right;line-height:1.35}

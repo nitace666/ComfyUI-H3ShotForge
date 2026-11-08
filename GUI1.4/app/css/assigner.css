@@ -1,0 +1,81 @@
+/* assigner.css — 设定 TAB 分配器面板（批 8 T3 + T4）
+   迁自 legacy GUI1.0 workbench_assigner.js 内联样式 → 类化（视觉值逐字迁移：
+   橙题 #f0a040 / 蓝框 #80c0ff / 已入池绿 #50c878 / 警示 #f9a825 / 错误 #d32f2f）。 */
+
+/* 面板壳 + 标题行 + 折叠 */
+.assigner-sec{border:1px solid #555;border-radius:6px;padding:10px;margin-top:10px;background:rgba(255,255,255,.02)}
+.assigner-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:700;margin:0 0 8px;color:#f0a040;font-size:13px}
+.assigner-collapse-toggle{background:transparent;border:0;color:#f0a040;cursor:pointer;font-size:14px;line-height:1;padding:0 2px}
+.assigner-sec.is-assigner-collapsed .assigner-body{display:none}
+
+/* ① 本批角色绑定（T4 · legacy _buildCastBindingsPanel 内联视觉值迁移） */
+.cast-bindings-panel{margin-top:10px;padding:8px;border:1px solid #555;border-radius:4px;background:rgba(255,255,255,.02)}
+.cast-bindings-cap{font-weight:700;color:#f0a040;font-size:12px;margin-bottom:6px}
+.cast-bindings-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.binding-empty{color:#888;font-size:11px}
+.binding-item{display:flex;align-items:center;gap:8px;padding:4px 6px;background:rgba(240,160,64,.06);border-radius:3px;flex-wrap:wrap}
+.binding-name{flex:1;color:#e6e6e6;font-size:12px}
+.binding-hit{padding:1px 6px;font-size:10px;border-radius:8px;background:rgba(80,200,120,.18);color:#50c878;border:1px solid #50c878}
+.binding-slots{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.binding-slot{padding:1px 6px;font-size:10px;border-radius:8px;background:rgba(240,160,64,.18);color:#f0a040;border:1px solid #f0a040}
+.binding-slot-remove-btn{padding:1px 6px;cursor:pointer;background:#3a3a3e;color:#cfd2da;border:1px solid #555;border-radius:3px;font-size:10px}
+.binding-remove-btn{padding:2px 8px;cursor:pointer;background:#3a3a3e;color:#cfd2da;border:1px solid #555;border-radius:3px;font-size:11px}
+.binding-preview{flex-basis:100%;display:flex;flex-direction:column;gap:2px;padding:4px 6px;border:1px dashed #555;border-radius:3px}
+.binding-preview-line{color:#cfd2da;font-size:11px}
+.binding-preview-fp{align-self:flex-start;padding:1px 6px;font-size:10px;border-radius:8px;background:rgba(80,200,120,.18);color:#50c878;border:1px solid #50c878}
+.binding-preview-fp.is-warn{background:rgba(249,168,37,.18);color:#f9a825;border-color:#f9a825}
+.binding-preview-error{color:#d32f2f;font-size:11px}
+.binding-stale{margin-top:6px;padding:6px 8px;border:1px solid #f9a825;border-radius:3px;background:rgba(249,168,37,.12);color:#f9a825;font-size:11px;display:flex;flex-direction:column;gap:4px}
+.binding-stale-row{display:flex;align-items:center;gap:8px}
+.binding-stale-text{flex:1}
+.bindings-slot-hint{margin-top:6px;padding:6px 8px;border:1px solid #f9a825;border-radius:3px;background:rgba(249,168,37,.12);color:#f9a825;font-size:11px}
+
+/* ② 本批分配卡汇总（legacy _buildAssignedCardsPanel 视觉值） */
+.assigned-cards-panel{margin-top:10px;padding:8px;border:1px solid #555;border-radius:4px;background:rgba(255,255,255,.02)}
+.assigned-cards-cap{font-weight:700;color:#80c0ff;font-size:12px;margin-bottom:6px}
+.assigned-cards-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.assigned-cards-empty{color:#888;font-size:11px}
+.assigned-card-item{display:flex;align-items:center;gap:8px;padding:4px 6px;background:rgba(128,192,255,.06);border-radius:3px}
+.assigned-card-name{flex:1;color:#e6e6e6;font-size:12px}
+.assigned-card-src{color:#80c0ff;font-size:11px}
+
+/* ③ 视图切换（列表/卡片） */
+.assigner-view-toggle{display:flex;justify-content:flex-end;gap:4px;margin-bottom:6px;align-items:center}
+.assigner-view-label{color:#9a9a9a;font-size:11px;margin-right:4px}
+.assigner-view-btn{padding:3px 10px;cursor:pointer;font-size:11px;background:#3a3a3e;color:#cfd2da;border:1px solid #555;border-radius:3px}
+.assigner-view-btn.active{background:#80c0ff;color:#1a1a1e;border-color:#80c0ff;font-weight:700}
+
+/* 卡网格（卡片模式显 · 列表模式隐） */
+.assigner-card-grid{display:none;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:8px;padding:6px;border:1px dashed #80c0ff;border-radius:4px;background:rgba(80,160,255,.04)}
+.assigner-card-grid.is-on{display:grid}
+.assigner-card-empty{color:#888;font-size:11px;padding:8px}
+.assigner-card-tile{cursor:default;border:1px solid #555;border-radius:4px;padding:6px;background:rgba(255,255,255,.04);display:flex;flex-direction:column;gap:4px}
+.assigner-card-tile.is-assigned{border-color:#50c878}
+.assigner-card-thumbs{display:flex;flex-direction:column;gap:3px}
+.assigner-card-row{display:flex;gap:4px;align-items:center;min-width:0}
+.assigner-card-usage{flex-shrink:0;padding:1px 6px;font-size:10px;border-radius:8px;background:rgba(128,192,255,.18);color:#80c0ff;border:1px solid #80c0ff}
+.assigner-card-media{font-size:11px;color:#cfd2da;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.assigner-card-tile-name{font-weight:700;font-size:12px;color:#e6e6e6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.assigner-card-badges{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.assigner-kind-badge{padding:1px 6px;font-size:10px;border-radius:8px;background:rgba(128,192,255,.18);color:#80c0ff;border:1px solid #80c0ff}
+.assigner-slots-badge{padding:1px 6px;font-size:10px;border-radius:8px;background:rgba(80,200,120,.18);color:#50c878;border:1px solid #50c878}
+.assigner-card-assign-btn{padding:4px 8px;cursor:pointer;background:#3a3a3e;color:#80c0ff;border:1px solid #80c0ff;border-radius:3px;font-size:11px;margin-top:2px;align-self:flex-start}
+
+/* 列表模式行：双下拉 + 分配按钮 */
+.assigner-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px;margin-bottom:8px;border:1px dashed #80c0ff;border-radius:4px;background:rgba(80,160,255,.06)}
+.assigner-row.is-hidden{display:none}
+.assigner-select{padding:4px 8px;font-size:12px;background:#1a1a1e;color:#e6e6e6;border:1px solid #555;border-radius:3px;flex:1;min-width:140px}
+.assigner-assign-btn{padding:6px 14px;cursor:pointer;background:#3a3a3e;color:#80c0ff;border:1px solid #80c0ff;border-radius:3px;font-size:12px}
+.assigner-assign-btn:disabled{cursor:default;opacity:.5}
+
+/* 反馈行 / 覆盖占位 / 空态 / 信息行 */
+.assigner-feedback{color:#cfd2da;font-size:12px;margin-top:4px}
+.assigner-feedback.is-ok{color:#50c878}
+.assigner-feedback.is-warn{color:#f9a825}
+.assigner-feedback.is-error{color:#d32f2f}
+.assigner-override-slot{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.assigner-override-btn{padding:2px 8px;font-size:11px;background:#3a3a3e;color:#f9a825;border:1px dashed #f9a825;border-radius:3px}
+.assigner-override-btn:disabled{cursor:default;opacity:.7}
+.assigner-empty{color:#888;font-size:11px;margin-top:4px}
+.assigner-info{color:#888;font-size:11px;margin-top:4px}
+.is-hidden{display:none}

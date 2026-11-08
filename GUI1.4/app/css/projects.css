@@ -1,0 +1,89 @@
+/*
+ * GUI1.3 项目管理视图样式
+ * 源：v43 原型（md5=43c85f743cfb8445f63fb8292c3355aa）S1-1 T3 提取
+ *
+ * 提取范围（v43 行号 → 类名）：
+ *   :72    .proj-top
+ *   :73    .proj-top h2
+ *   :74    .search
+ *   :78    .pgrid
+ *   :79    .pcard .cover
+ *   :80    .pcard .cover.pic
+ *   :81    .pcard .nm
+ *   :82    .pcard .dt
+ *   :83    .tags
+ *   :84    .tag
+ *   :89    .empty-hint
+ *   :542   .pcard (position:relative)
+ *   :543   .pcard .pc-ops
+ *   :544   .pcard:hover .pc-ops
+ *   :545   .pc-ops .op (与 .ac-ops .op 共享，本文件仅占 .pc-ops 内的 op 形态)
+ *   :546   .pc-ops .op:hover
+ *
+ * 范围外（不搬）：
+ *   .ghostbtn / .dangerbtn / .mbox / .prim —— 通用组件件，已在 theme.css；本文件不重出。
+ *   .fillpanel —— v43 :752-756 工作区通用 fillpanel，shell.css 已含（项目页沿用 .fillpanel 容器
+ *                 + .inh 段落小注，主题已就位；本视图不另立）。
+ *
+ * 命名纪律：保留 v43 类名原样，不二次缩写；模块新增类（.proj-newcard / .proj-cover-new / .recycle-row）
+ * 在末尾追加，不污染 v43 块。
+ * 不动 theme.css / shell.css / portal.css（任务单边界）。
+ * 逐字比对由 S1-1 T3 验收脚本执行（grep 抽 6 条规则与 v43 原文 diff）。
+ */
+
+/* ===== 项目页顶部工具行（v43 :72-74） ===== */
+/* v43 :72 .proj-top */
+.proj-top{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+/* v43 :73 .proj-top h2 */
+.proj-top h2{font-size:17px;font-weight:600}
+/* v43 :74 .search（与 theme.css 中 .search 同形 · 主题已含，本文件不再出，避免重复） */
+
+/* ===== 项目网格（v43 :78） ===== */
+/* v43 :78 .pgrid */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+
+/* ===== 项目卡（v43 :79-84） ===== */
+/* v43 :79 .pcard .cover */
+.pcard .cover{height:110px;border-radius:12px;background:#111317;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:#333940}
+/* v43 :80 .pcard .cover.pic */
+.pcard .cover.pic{background:linear-gradient(180deg,#7db4d8 0%,#cfe3ee 55%,#e8d9b8 56%,#d8c9a4 100%);color:transparent}
+/* v43 :81 .pcard .nm */
+.pcard .nm{margin-top:8px;font-size:13px}
+/* v43 :82 .pcard .dt */
+.pcard .dt{font-size:12px;color:var(--txt2);margin-top:3px}
+/* v43 :83 .tags */
+.tags{display:flex;gap:6px;margin-top:6px}
+/* v43 :84 .tag（与 theme.css 中 .tag 同形 · 主题已含，本文件不再出，避免重复） */
+
+/* ===== 搜索空态（v43 :89 · 共用件 · 在 .agrid/.pgrid 内均生效） ===== */
+/* v43 :89 .empty-hint（已在 theme.css 出过；本文件不重出，避免重复） */
+
+/* ===== 卡片浮操作组（v43 :542-546） ===== */
+/* v43 :542 .pcard position:relative */
+.pcard{position:relative}
+/* v43 :543 .pcard .pc-ops */
+.pcard .pc-ops{position:absolute;top:6px;right:6px;display:none;gap:2px;background:#000c;border-radius:8px;padding:2px;z-index:3}
+/* v43 :544 .pcard:hover .pc-ops */
+.pcard:hover .pc-ops{display:flex}
+/* v43 :545 .pc-ops .op (与 .ac-ops .op 共享 op 形态；本文件仅占 .pc-ops 内的 op 形态) */
+.pc-ops .op{font-size:12px;color:var(--txt2);cursor:pointer;padding:2px 6px;border-radius:8px}
+/* v43 :546 .pc-ops .op:hover */
+.pc-ops .op:hover{color:var(--txt);background:#ffffff14}
+
+/* ===== 新增（非 v43 · 模块化所需） =====
+ * 说明：T3 在 v43 原型基础上补以下小类，不污染 v43 段块。
+ *   .proj-newcard —— "+开始创作" 占位卡（虚框 + 居中 + 加号 + 文案）
+ *   .proj-cover-new —— 占位卡封面视觉
+ *   .pcard .pc-ops .op.danger —— 危险操作红色（删除项）
+ *   .recycle-row —— 回收站列表行（沿用 .cfg .row 视觉；本类只补轻量包裹）
+ *   .pcard .pc-ops .op.armed —— 二次确认 armed 态（v43 :3038 形态：按钮颜色转红）
+ */
+.proj-newcard .cover{border-style:dashed;flex-direction:column;gap:6px;cursor:pointer;color:var(--txt2)}
+.proj-newcard .nm{color:var(--txt2)}
+.pcard .pc-ops .op.danger{color:#d98c8c}
+.pcard .pc-ops .op.danger:hover{color:#ff9a9a;background:#4a2a2a}
+/* v43 :3038-3041 二次确认 armed 态：按钮颜色转红（演示：#ff9a9a 文字 + #1a1212 底） */
+.pcard .pc-ops .op.armed{color:#ff9a9a;background:#1a1212}
+.recycle-row{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px;font-size:13px}
+.recycle-row .nm{flex:1;color:var(--txt);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recycle-row .meta{font-size:12px;color:var(--txt3)}

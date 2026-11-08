@@ -1,0 +1,328 @@
+/*
+ * GUI1.3 主题变量轮
+ * 源：v43 原型（md5=43c85f743cfb8445f63fb8292c3355aa）style :8-14 + :509 + 全局基础规则；S1-0 T2 变量轮，组件轮见后续提交
+ * body 布局 4 项 S1-1 T0 补入（源 :11）
+ */
+:root{
+  --bg:#0e0f11; --panel:#16181b; --panel2:#1e2126; --line:#26282f;
+  --txt:#e8eaee; --txt2:#9aa3ad; --txt3:#67707a;
+  --accent:#0e7a86; --accent-deep:#0a626d; --accent-bright:#38b6c4;
+  --ok:#3ecf6f; --warn:#e6b455; --bad:#e06060; --playerbg:#141414;
+  --navw:200px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--txt);font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden;font-size:14px}
+
+/* v43 原型 :509：slim 态收起侧栏 */
+body.slim{--navw:56px}
+
+/*
+ * GUI1.3 组件轮
+ * 源：v43 原型（md5=43c85f743cfb8445f63fb8292c3355aa）style 块（提取 257 唯一类中的通用基础件）
+ * 提取范围：跨场景/跨子面板复用的通用件——按钮、输入、卡片基类、模态、toast/通知面板、标签/徽标/chip、表格基样式、tooltip、工具条容器基类、头像/缩略图基类
+ * 范围外（页面级布局 · 归 S1-1~S1-4）：左栏/三栏/TAB 定位/时间线轨道/画布节点定位/段卡阵/段编辑抽屉/项目列表布局/资产页布局/设定 TAB 框架/门户卡阵
+ * 命名纪律：v43 同名重复 6 组中 4 组已按后写覆盖语义合并（.tool/.notif-panel/.fld .u/.acard）；.runrow 属页面级，批 R2 已随 .runs 提取至 shell.css（#views 并集合并同规见 shell.css）
+ */
+
+/* ===== 工具类（utility） ===== */
+.ic{flex-shrink:0;vertical-align:-3px}
+.num{font-variant-numeric:tabular-nums}
+.ref{color:var(--accent-bright);font-weight:600}
+body.noselect{user-select:none}
+body.notify-bar .bellbar{display:flex}
+
+/* v43 原型 :328-329 钦点的 textarea.gp 全局规则（含 focus 态）已统一落 setup.css（R1 批实装 + R8 合并去重）。
+   此前本文件另存一条残句 `width:100%;min-height:72px`——与 setup.css 完整规则重复且致两处漂移，R8 已删。 */
+
+/* v35 项2：设置页「界面字号」标准/大 —— body.bigui 覆盖常用字号类（各 +1px · .sc-prompt 按验收取 14px） */
+body.bigui .sc-prompt{font-size:14px}
+body.bigui .pcard-prompt,body.bigui .cnode.seg .pcard-prompt{font-size:13px}
+body.bigui .cbox{font-size:13px}
+body.bigui .cbox .cb-in{font-size:13px}
+body.bigui .fg2{font-size:13px}
+body.bigui .nav-label{font-size:15px}
+body.bigui .inh{font-size:13px}
+body.bigui .sc-meta{font-size:13px}
+body.bigui .ghostbtn{font-size:14px}
+body.bigui .pathrow{font-size:14px}
+body.bigui .clip{font-size:13px}
+body.bigui .fsthumb{font-size:13px}
+
+/* ===== 按钮 ===== */
+.prim{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#eafcff;font-weight:600;border-radius:8px;padding:7px 16px;cursor:pointer}
+.prim:hover{background:var(--accent-deep)}
+/* 走查反馈 F14: ghostbtn 原为 span 设计——button 元素 UA 默认浅灰背景未清（弹窗 footer 按钮浅底灰字不可读）→ 统一透明底 */
+.ghostbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:7px 12px;color:var(--txt2);cursor:pointer;font-size:13px;background:transparent}
+.ghostbtn:hover{color:var(--txt);background:var(--panel2)}
+.ghostbtn.off{opacity:.4;cursor:not-allowed}
+/* v33 W-B1：音乐文件选择按钮变小号 ghost 风格，与其他按钮统一 */
+.ghostbtn-mini{border:1px solid var(--line);border-radius:8px;padding:3px 10px;font-size:12px;color:var(--txt2);cursor:pointer;background:var(--panel2);white-space:nowrap}
+.ghostbtn-mini:hover{color:var(--txt);border-color:var(--accent-bright)}
+/* v36 包2：画布历史按钮置灰 */
+.ghostbtn.dim{opacity:.42;pointer-events:none}
+/* v25 W2：创作画布按钮加重 */
+.ghostbtn.canvas-entry{font-weight:600;color:var(--txt);border-color:#33363d}
+.ghostbtn.canvas-entry:hover{background:#1a2026;border-color:var(--accent-bright)}
+.dangerbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid #4a2a2a;color:#d98c8c;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;background:#1a1212}
+.dangerbtn:hover{color:#ff9a9a;border-color:var(--bad)}
+/* 设定页表单小按钮（跨子面板：资源编排 / LoRA 行 / 镜像 / 模型槽 等） */
+.fbtn{border:1px solid var(--line);border-radius:8px;padding:3px 10px;font-size:12px;color:var(--txt2);cursor:pointer;background:var(--panel2);white-space:nowrap}
+.fbtn:hover{color:var(--txt);border-color:var(--accent-bright)}
+
+/* ===== 输入类 ===== */
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 12px;color:var(--txt3);width:220px}
+input[type=checkbox]{accent-color:var(--accent)}
+/* 虚拟文件显示（输入框视觉同形 · 只读文件路径展示） */
+.vfile{flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:5px 8px;color:var(--txt);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 原生 select/input 下拉型控件（v43 :575 照搬 · 顶栏模式/次数等消费点）——此前全站缺此规则致白底黑字 */
+.selx{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 8px;color:var(--txt);font-size:12px;outline:none}
+select.selx option{background:var(--panel2);color:var(--txt)}
+
+/* 字段行（设定 TAB + 段编辑抽屉共用） */
+.fld{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
+.fld>label{width:64px;color:var(--txt2);flex-shrink:0;text-align:left}
+.fld select,.fld input[type=text],.fld input[type=number]{flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:5px 8px;color:var(--txt);font-size:12px;outline:none;font-family:inherit}
+.fld select:focus,.fld input:focus{border-color:var(--accent-bright)}
+/* 同名规则×2，后写覆盖（v43 原样）：L304 颜色字 + L626 限宽省略，合并 */
+.fld .u{color:var(--txt3);font-size:12px;flex-shrink:0;max-width:42%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* 节标题（时间线 + 段编辑抽屉 + 工作区共用） */
+.edit-title{font-size:12px;color:var(--txt2);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+/* inherits 灰字小注（设定 TAB + 段卡 + sc-meta 共用） */
+.inh{color:var(--txt3);font-weight:400;font-size:12px}
+
+/* ===== 标签 / 徽标 / chip ===== */
+.tag{font-size:12px;color:var(--txt2);border:1px solid var(--line);border-radius:8px;padding:1px 6px}
+/* 媒体行 tag chip（带删×） */
+.tagc{border:1px solid var(--line);border-radius:12px;padding:1px 8px;font-size:12px;color:var(--txt2)}
+.tagc b{cursor:pointer;margin-left:4px;color:var(--txt3)}
+.badge{font-size:12px;border-radius:8px;padding:2px 7px;flex-shrink:0;border:1px solid;white-space:nowrap}
+.badge.b-first{color:#7ec9ff;border-color:#2b5d8a;background:#14202e}
+.badge.b-mid{color:#cfe0f2;border-color:#3a4654;background:var(--panel2)}
+.badge.b-last{color:#ffd76a;border-color:#7a5b2b;background:#221c10}
+/* 设定 TAB 提示词组 chip */
+.pill{border:1px solid var(--line);border-radius:12px;padding:1px 8px;white-space:nowrap}
+.pill .ref{color:var(--accent-bright);font-weight:600}
+.pill.dragchip{cursor:grab;user-select:none}
+.pill.dragchip:active{cursor:grabbing}
+/* 筛选 chip（项目页/段表 共用） */
+.fchip{border:1px solid var(--line);border-radius:14px;padding:4px 14px;font-size:12px;color:var(--txt2);cursor:pointer}
+.fchip:hover{color:var(--txt)}
+.fchip.on{background:#10333a;color:var(--txt);border-color:var(--accent-bright)}
+
+/* ===== 空态 ===== */
+/* v27 P4：搜索空态（资产/项目两处共用） */
+.empty-hint{grid-column:1/-1;text-align:center;color:var(--txt3);font-size:12px;padding:22px 8px;font-weight:400}
+
+/* ===== Toast ===== */
+#toast{position:fixed;left:50%;bottom:56px;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:9px 18px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:99;max-width:70vw}
+#toast.show{opacity:1}
+
+/* ===== 通知面板 ===== */
+/* 同名规则×2，后写覆盖（v43 原样）：L567 限窗尺寸 + L608 面板定位，合并 */
+/* 批 10C-T1 · F57（老板裁⑤A=侧栏底部）：铃铛随 .shell-eng-slot 迁侧栏底部 → 面板向上弹出。
+   此为兜底位（侧栏底部上方·左缘对齐侧栏内容 10px）；实际落点由 notif.js 开面板时按铃铛实时几何覆盖 */
+.notif-panel{position:fixed;left:10px;bottom:64px;width:320px;background:var(--panel);border:1px solid var(--line);border-radius:12px;z-index:95;display:none;box-shadow:0 10px 30px #000a;overflow:hidden;resize:both;max-width:420px;max-height:60vh}
+.notif-panel.show{display:block}
+.notif-panel .nh{padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;display:flex;align-items:center}
+.notif-panel .nh span{margin-left:auto;font-size:12px;color:var(--txt3);cursor:pointer;font-weight:400}
+.nitem{display:flex;gap:10px;padding:10px 14px;border-bottom:1px solid #20232a;font-size:12px;align-items:flex-start}
+.nitem:last-child{border-bottom:none}
+.nitem .ndot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.nitem small{color:var(--txt3);display:block;margin-top:3px}
+
+/* ===== 右键 / 弹起菜单 ===== */
+#ctxmenu{position:fixed;display:none;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;z-index:120;min-width:180px;box-shadow:0 8px 24px #000a}
+.ctx-item{padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer;color:var(--txt);display:flex;align-items:center;gap:8px}
+.ctx-item:hover{background:#24272d}
+.ctx-item.danger{color:var(--bad)}
+.ctx-sep{height:1px;background:var(--line);margin:4px 6px}
+/* 弹出式菜单（画布右键 / 媒体行 右键 等共用） */
+.pmenu{position:fixed;display:none;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;z-index:120;min-width:190px;box-shadow:0 8px 24px #000a}
+
+/* ===== 自制下拉 cbox（设定 TAB 多处：模型槽 / 资源编排 / 分镜段节点 入链等） ===== */
+.cbox{display:flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:5px 8px;cursor:pointer;font-size:12px;color:var(--txt)}
+.cbox:hover{border-color:#33363d}
+.cbox .cb-v{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cbox .cb-in{flex:1;min-width:0;background:none;border:0;color:var(--txt);font-size:12px;outline:none;font-family:inherit}
+.cbox .cb-a{color:var(--txt3);font-size:12px;flex-shrink:0}
+/* 批10A-T1 · F41：选项多时菜单限高内部滚动（此前 overflow:hidden 全平铺盖住下方设置项）；滚动条沿用 .cnode 深色惯例（canvas.css 6px + --line） */
+.cbox-menu{position:fixed;z-index:125;background:var(--panel);border:1px solid var(--line);border-radius:8px;min-width:150px;box-shadow:0 8px 24px #000a;display:none;max-height:60vh;overflow-y:auto;padding:4px}
+.cbox-menu::-webkit-scrollbar{width:6px}
+.cbox-menu::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.cbox-menu .co{padding:6px 12px;font-size:12px;cursor:pointer;border-radius:8px;color:var(--txt)}
+.cbox-menu .co:hover{background:#24272d}
+
+/* ===== LoRA 选择浮层 ===== */
+.lora-picker{position:fixed;z-index:130;background:var(--panel);border:1px solid var(--line);border-radius:12px;min-width:200px;box-shadow:0 8px 24px #000a;padding:6px}
+.lora-picker .lpi{padding:6px 12px;font-size:12px;cursor:pointer;border-radius:8px;color:var(--txt)}
+.lora-picker .lpi:hover{background:#24272d}
+.lora-picker .lpi.disabled{opacity:.4;cursor:not-allowed;color:var(--txt3)}
+.lora-picker .lpi.disabled:hover{background:transparent}
+
+/* ===== 资产卡基类 acard（资产库 / @浮窗 / 媒体行 / 画布节点 共用） ===== */
+/* 同名规则×2，后写覆盖（v43 原样）：L83 完整卡面 + L693 position:relative（L83 已含，故 L693 冗余丢弃） */
+.acard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;cursor:pointer;position:relative}
+.acard:hover{background:#24272d}
+/* v26 W7：缩略图加大 4:3 基准 176×132 */
+.acard .ph{width:100%;aspect-ratio:4/3;height:auto;border-radius:8px;background:#111317;display:flex;align-items:center;justify-content:center;color:#4a5464;overflow:hidden;position:relative}
+.acard .no{margin-top:8px;font-size:13px;color:var(--txt)}
+.acard .no b{color:var(--accent-bright)}
+/* v26 W6：预览图 4:3 规则（contain / 双图层叠 / 左右各半拼接） */
+.acard .ph.contain{background-size:contain;background-repeat:no-repeat;background-position:center}
+.acard .ph-stack{position:absolute;left:0;right:0;top:0;bottom:0}
+.acard .ph-stack .layer{position:absolute;background-size:cover;background-position:center;border-radius:6px}
+.acard .ph-stack .l1{left:0;right:0;top:0;height:78%}
+.acard .ph-stack .l2{left:14%;right:14%;bottom:0;height:36%;border:1px solid #2a2e35;box-shadow:0 -2px 8px #000a}
+/* v26 W6：恰好 4:3 时左右各半拼接（CSS 两半裁切） */
+.acard .ph.split{position:relative}
+.acard .ph.split .half{position:absolute;top:0;bottom:0;width:50%;background-size:200% 100%;background-repeat:no-repeat}
+.acard .ph.split .h1{left:0;background-position:left center}
+.acard .ph.split .h2{right:0;background-position:right center}
+/* v26 W3：三视图待审条带 */
+.acard .review-strip{margin-top:8px;padding:6px;border:1px dashed #7a5b2b;background:#1c1610;border-radius:8px;text-align:left}
+.acard .review-strip .rs-tag{display:inline-block;font-size:12px;color:#ffd76a;border:1px solid #7a5b2b;border-radius:8px;padding:1px 6px;margin-bottom:4px}
+.acard .review-strip .rs-thumb{width:100%;height:66px;border-radius:6px;background:linear-gradient(135deg,#9db4d8 0 33%,#3a4a66 33% 66%,#7a8090 66%);margin-bottom:6px}
+.acard .review-strip .rs-btns{display:flex;gap:6px}
+.acard .review-strip .rs-btns .ok{background:#1a2a1d;color:#9ad3a8;border:1px solid #2f6f4a;border-radius:8px;padding:3px 0;flex:1;text-align:center;cursor:pointer;font-size:12px}
+.acard .review-strip .rs-btns .bad{background:#2a1414;color:#f2c0c0;border:1px solid #7a3b3b;border-radius:8px;padding:3px 0;flex:1;text-align:center;cursor:pointer;font-size:12px}
+.acard .review-strip .rs-btns span:hover{filter:brightness(1.15)}
+/* v26 W3：待审产物已接入槽1 后，卡面缩略图变三视图横排 */
+.acard .ph.adopted{background:linear-gradient(90deg,#9db4d8 0 33%,#3a4a66 33% 66%,#7a8090 66%);background-size:cover}
+/* v11 件1：资产卡缩略图（person / scene / prop 三型预设） */
+.acard .ph.th-person,.acard .ph.th-scene,.acard .ph.th-prop{color:transparent}
+.th-person{background:linear-gradient(180deg,#e8d5c4 0 38%,#c9a08a 38% 42%,#9db4d8 42% 78%,#3a4a66 78%)}
+.th-scene{background:linear-gradient(180deg,#7db4d8 0 44%,#cfe3ee 44% 54%,#e8d9b8 54% 80%,#d8c9a4 80%)}
+.th-prop{background:linear-gradient(135deg,#9aa5b4 0 50%,#4a5568 50%)}
+.th-audio{background:linear-gradient(135deg,#32404e,#1a2129)}
+.at-th{width:32px;height:32px;border-radius:8px;flex-shrink:0;border:1px solid #00000088;background-size:cover}
+/* 卡面操作覆盖层（hover 显示）—— 合并 .pc-ops 与 .ac-ops 共享的 op 样式（v43 原 L538/L539）
+   F53 真根因（老板「文字在图片层后面」= 4 空框之谜终答）: .ac-ops 在 DOM 序先于 .ph（assets.js 卡面
+   先挂 ops 后挂 ph），同为定位元素 z-index 均 auto → 按序被 .ph-img/.ph-stack 层盖住，药丸底透出而字被埋。
+   提 z-index:5 压过全部 z-auto 的图/叠层兄弟节点（.ph relative · .ph-img/.ph-stack .layer absolute）。 */
+.acard .ac-ops{position:absolute;top:6px;right:6px;display:none;gap:4px;z-index:5}
+.acard:hover .ac-ops{display:flex}
+/* 同名规则×2，后写覆盖（v43 原样）：L538 与 .pc-ops 共用 + L696 单独补 background:#000a；合并为单一定义 */
+/* 走查反馈 F53: 12px txt2 暗字在 #000a 药丸上低对比（被误读为空方框）——文字提一档到 txt·不动尺寸布局 */
+.ac-ops .op{font-size:12px;color:var(--txt);cursor:pointer;padding:2px 6px;border-radius:8px;background:#000a}
+.ac-ops .op:hover{color:var(--txt);background:#ffffff14}
+
+/* ===== 通用模态 mbox / 模态背景 ===== */
+#modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:100}
+/* 同名规则×2，后写覆盖（v43 原样）：L401 与 .cmp-wrap 共用 resize + L404 mbox 自身尺寸底色，合并 */
+.mbox{width:440px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;resize:both;overflow:auto;min-width:320px;min-height:140px}
+/* 同名规则×2，后写覆盖（v43 原样）：L402 与 .cmp-head 共用 cursor:move + L405 mbox h3 字号，合并 */
+.mbox h3{font-size:14px;margin-bottom:4px;cursor:move}
+.mbox .sub{font-size:12px;color:var(--txt2);margin-bottom:12px}
+.mbox .foot{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+/* v26 W1：弹窗输入框区分背景（border + 底色） */
+.mbox input[type=text],.mbox input[type=number],.mbox textarea,.mbox select,.mbox .gp{background:var(--panel2);border:1px solid var(--line)}
+/* F71（批 10-J-T2）：上条只给底色边框、无 color → 控件文字落 UA 默认黑，在 --panel2 深底上
+   1.30:1（老板真机「淡入/淡出输入框内数字 0 几乎不可见」）。此处补显式前景色。
+   选择器不按 [type=...] 限定：DOM 里无 type 属性的 input（marker 改名 .mk-input / 关键帧
+   .kf-v）属性选择器匹配不上，同属漏网。纯 color 声明，不碰 range 滑杆的底色边框。 */
+.mbox input,.mbox textarea,.mbox select{color:var(--txt)}
+/* 段级审核三选一弹窗（沿用 mbox 范式） */
+.mbox h3 .seg-tag{color:var(--txt2);font-weight:400;margin-left:4px}
+.mbox .tri{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.mbox .tri .opt{flex:1;min-width:140px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;font-size:13px;color:var(--txt2);background:var(--panel2);display:flex;flex-direction:column;gap:4px}
+.mbox .tri .opt:hover{border-color:var(--accent-bright);color:var(--txt)}
+.mbox .tri .opt.ok{border-color:#2f6f4a;color:#bfe8d2}
+.mbox .tri .opt.bad{border-color:#7a3b3b;color:#f2c0c0}
+.mbox .tri .opt.again{border-color:#7a5b2b;color:#ffd76a}
+.mbox .tri .opt.on{border-color:var(--accent-bright);color:var(--txt);background:#10333a}
+.mbox .tri .opt b{font-weight:600}
+.mbox .tri .opt small{font-size:12px;color:var(--txt3)}
+
+/* ===== 对比弹窗 cmp ===== */
+#cmp{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:110}
+/* 同名规则×2，后写覆盖（v43 原样）：L386 cmp-wrap 自身尺寸底色 + L401 与 .mbox 共用 resize，合并 */
+.cmp-wrap{width:min(940px,94vw);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;resize:both;overflow:auto;min-width:320px;min-height:140px}
+/* 同名规则×2，后写覆盖（v43 原样）：L387 cmp-head flex 布局 + L402 与 .mbox h3 共用 cursor:move，合并 */
+.cmp-head{display:flex;align-items:center;margin-bottom:12px;cursor:move}
+.cmp-head h3{font-size:14px}
+.cmp-x{margin-left:auto;color:var(--txt2);cursor:pointer;display:flex;padding:0 6px}
+.cmp-x:hover{color:var(--txt)}
+.cmp-grid{display:flex;gap:10px}
+.cmp-grid.four{display:grid;grid-template-columns:1fr 1fr}
+.cmp-cell{position:relative;flex:1;aspect-ratio:16/9;background:var(--playerbg);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;overflow:hidden}
+.cmp-tag{position:absolute;top:8px;left:8px;background:#000a;color:#dfe8f2;padding:2px 10px;border-radius:8px;font-size:12px;backdrop-filter:blur(2px)}
+.cmp-tc{font-size:12px;color:var(--txt2);font-variant-numeric:tabular-nums}
+.cmp-bar{height:4px;background:#23262c;border-radius:8px;width:80%}
+.cmp-bar i{display:block;height:100%;width:0;background:var(--accent-bright);border-radius:8px;}
+.cmp-master{display:flex;align-items:center;gap:12px;margin-top:12px}
+.cmp-play{width:38px;height:38px;border-radius:50%;background:var(--accent);color:#eafcff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.cmp-note{font-size:12px;color:var(--txt2)}
+
+/* ===== 预览最大化弹窗 pv-modal（沿用 mbox 范式 · 可拖可拉） ===== */
+.pv-modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:130}
+.pv-modal.show{display:flex}
+.pv-modal .pv-stage{width:780px;max-width:94vw;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;resize:both;overflow:auto;min-width:560px;min-height:420px}
+.pv-modal .pv-stage h3{font-size:14px;font-weight:600;margin-bottom:4px;cursor:move;user-select:none;display:flex;align-items:center;gap:8px}
+.pv-modal .pv-stage .pv-sub{font-size:12px;color:var(--txt2);margin-bottom:14px}
+.pv-modal .pv-frame{position:relative;aspect-ratio:16/9;background:#000;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.pv-modal .pv-frame .pv-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:#000a;border:2px solid #fff9;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#dfe8f2;font-size:26px}
+.pv-modal .pv-frame .pv-play:hover{background:#38b6c455;border-color:var(--accent-bright)}
+.pv-modal .pv-frame .pv-tag{position:absolute;right:10px;bottom:10px;background:#000a;color:#fff;font-size:12px;padding:2px 9px;border-radius:8px}
+.pv-modal .pv-frame .pv-tag.run{color:var(--warn)}
+.pv-modal .pv-frame .pv-tag.bad{color:var(--bad)}
+.pv-modal .pv-toolbar{display:flex;align-items:center;gap:10px;margin-top:10px}
+.pv-modal .pv-toolbar .pv-progress{flex:1;margin-top:0}
+.pv-modal .pv-stage .pv-meta{font-size:12px;color:var(--txt3);margin-top:10px;display:flex;gap:14px;flex-wrap:wrap}
+.pv-modal .x{cursor:pointer;color:var(--txt2);margin-left:auto;display:flex;padding:2px 6px;border-radius:8px}
+.pv-modal .x:hover{color:var(--txt);background:var(--panel2)}
+
+/* ===== 进度条 pv-progress（节点内 / 弹窗内 共用） ===== */
+.pv-progress{height:4px;background:#23262c;border-radius:8px;margin-top:5px;overflow:hidden}
+.pv-progress i{display:block;height:100%;width:0;background:var(--accent-bright);border-radius:8px;transition:width .15s linear}
+.pv-progress.running i{animation:pv-prog 8s linear forwards}
+@keyframes pv-prog{from{width:0}to{width:100%}}
+
+/* ===== legacy toast 件适配样式（S1-1 T5 真机走查修正笔） ===== */
+/* 源：legacy/app/css/components.css :300-374（右下角浮层模式），变量自 legacy 体系适配为本仓 v43 体系 */
+/* 根因：ui/toast.js（legacy 原样取用）创建 .gui-toast-container/.gui-toast，与 v43 #toast 类名不匹配，真机上 toast 无样式落文档流 */
+.gui-toast-container {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10000;   /* 体验修复 C-9：99 → 10000（高于 modal 100 与离线横幅 9998·弹窗/离线时提示不被压） */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  pointer-events: none;
+}
+.gui-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--panel2);
+  color: var(--txt);
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  font-size: 13px;
+  line-height: 1.5;
+  pointer-events: auto;
+  width: 100%;
+  min-width: 0;
+  animation: gui-toast-in 160ms ease-out;
+}
+.gui-toast__text { flex: 1 1 auto; min-width: 0; word-break: break-word; overflow-wrap: anywhere; }
+.gui-toast__detail { flex-basis: 100%; margin-top: 4px; color: var(--txt3); font-size: 12px; font-family: Consolas, monospace; word-break: break-all; }
+.gui-toast__close { flex: none; padding: 0 4px; background: transparent; border: none; color: var(--txt3); font-size: 18px; line-height: 1; cursor: pointer; font-family: inherit; }
+.gui-toast__close:hover { color: var(--txt); }
+.gui-toast--success { border-left-color: var(--ok); }
+.gui-toast--success .gui-toast__text { color: var(--ok); }
+.gui-toast--info { border-left-color: var(--accent); }
+.gui-toast--info .gui-toast__text { color: var(--txt); }
+.gui-toast--warn { border-left-color: var(--warn); }
+.gui-toast--warn .gui-toast__text { color: var(--warn); }
+.gui-toast--error { border-left-color: var(--bad); }
+.gui-toast--error .gui-toast__text { color: var(--bad); }
+@keyframes gui-toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }

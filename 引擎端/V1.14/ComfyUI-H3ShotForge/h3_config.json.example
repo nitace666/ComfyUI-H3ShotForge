@@ -1,0 +1,32 @@
+{
+  "_说明": "复制本文件为 h3_config.json 放在节点目录下, 按机器实际情况填写; 所有键都可留空(留空时 input/output 自动用 ComfyUI 自带目录, 模板下拉只剩扫描结果)",
+  "workflow_dir": "H3 工作流方案根目录(绝对路径), 模板下拉扫描和相对模板解析的基准; 留空则下拉为空",
+  "default_workflow": "默认工作流, 相对 workflow_dir 的路径(用 / 分隔), 如 turboVA+CK/h3_ref2va_8V8A_CK.json; 也可填绝对路径; 留空则无默认模板",
+  "input_dir": "本地素材目录(绝对路径); 留空 = 自动用 ComfyUI input 目录",
+  "output_dir": "服务器输出根目录(绝对路径); 留空 = 自动用 ComfyUI output 目录",
+  "archive_root": "统一归档根目录(绝对路径); 留空 = 不启用(行为与旧版完全一致). 配置后: submit 的 archive_dir 相对路径锚定到此根下(绝对路径不变), 且 /h3_batch/video 白名单额外允许此根内视频",
+  "h3_audio_context_frames": "段 N+1 继承段 N 尾部音频帧数 (默认 22 = 现行为): -1 = 关闭音频继承 (画面续接保留); 0 = 显式传 0 给节点 (节点语义=跟随画面窗); N = 直传 N 帧. submit 时重读文件, 改键免重启",
+  "h3_audio_taper_steps": "续接音频参考的旧端半余弦渐释步数 (默认 0 = 不施加, 渲染行为与旧版一致): k=min(steps, 音频步数), 旧端首位 0.0 → 贴缝端 1.0, 仅首位 k 步内变化; submit 时重读文件, 改键免重启",
+  "_h3_audio_ref_说明": "分轨继承三键 (默认全关 = 现行为; submit 时重读文件, 改键免重启): h3_audio_ref_split=总开关; h3_audio_ref_vocals/background=人声/背景子轨开关 (总关时子键一律忽略)",
+  "h3_audio_ref_split": false,
+  "h3_audio_ref_vocals": false,
+  "h3_audio_ref_background": false,
+  "resource_filter_terms": "资源目录扫描筛选词(数组); 文件名(小写)含任一词即通过; 默认 [\"h3\", \"minimax\", \"turbo\"]. 改动后免重启, 下次 GET /h3_batch/resources 即生效. 删除 \"turbo\" 可严格排除异生态 turbo 资产(但也会丢掉不带 h3/minimax 词的官方 turbo 项).",
+  "resource_official_assets": "资源目录扫描官方资产直通清单(数组); 文件名精确相等或前缀匹配即通过(不看词); 用于不带 h3/minimax/turbo 词的官方资产(如 minimax_h3_latent_upscaler_3d_fp16). 默认见资源管理: 上述 11 项. 改动后免重启.",
+  "_join_block_说明": "以下 join 块键用于 S3 拼接合成 (V1.10 批 1 T1/T2/T3 累加); 所有键均可留空走默认值, V1.10 之前 h3_config.json 无此块也兼容",
+  "join": {
+    "join_mode": "拼接转场模式: hard_cut | crossfade | fade | black (默认 crossfade)",
+    "loudnorm": "EBU R128 逐段响度归一开关 (默认 true; 转场模式/loudnorm 任一开 → 重编码)",
+    "explicit_stream_copy": "V1.8 裸拼接流复制显式开关 (默认 false; 三件套/BGM 全关才能进流复制退路)",
+    "crossfade_frames": "crossfade 转场帧数, 换算 fade_seconds = frames / fps (默认 4)",
+    "match_tail": "音画时长对齐开关: 音频长 atrim / 短 apad 拉齐视频流时长 (默认 true, V1.10 T1)",
+    "match_tail_tolerance_ms": "match_tail 容差, 差值≤此值不插入 atrim/apad (默认 5ms)",
+    "declick": "hard_cut 缝点 declick 开关 (默认 false; 数值开 → declick_ms 毫秒 afade, V1.10 T2)",
+    "declick_ms": "declick 单边时长毫秒数 (默认 12, 批 1 收尾 A/B 定稿; 12/15ms 真机缝点 RMS 阶跃等效, 取 41 号对照先例)",
+    "silence_fade": "hard_cut 安静缝点自动判定开关 (默认 true, V1.10 T2)",
+    "silence_fade_seconds": "非安静缝点单边 afade 秒数 (默认 0.375, 覆盖 declick)",
+    "silence_threshold_db": "安静判定 RMS 阈值 dB (默认 -45.0; 两侧均 < 阈值 → 安静)",
+    "silence_probe_seconds": "RMS 探测窗口秒数, 段头/尾各跑一次 (默认 0.1)",
+    "bgm_side_volume": "BGM 混合时段侧音量系数 (默认 0.5 = -6dB, 音乐为主; V1.10 T3)"
+  }
+}

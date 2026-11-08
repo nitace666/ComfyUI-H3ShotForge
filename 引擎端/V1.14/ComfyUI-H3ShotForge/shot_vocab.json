@@ -1,0 +1,268 @@
+{
+  "镜头角度": [
+    {
+      "phrase": "平视",
+      "phrase_en": "eye-level angle"
+    },
+    {
+      "phrase": "俯拍",
+      "phrase_en": "high angle"
+    },
+    {
+      "phrase": "仰拍",
+      "phrase_en": "low angle"
+    },
+    {
+      "phrase": "过肩视角",
+      "phrase_en": "over-the-shoulder view"
+    },
+    {
+      "phrase": "主观视角",
+      "phrase_en": "first-person POV"
+    },
+    {
+      "phrase": "荷兰角",
+      "phrase_en": "Dutch angle"
+    }
+  ],
+  "景别": [
+    {
+      "phrase": "大远景",
+      "phrase_en": "extreme long shot"
+    },
+    {
+      "phrase": "远景",
+      "phrase_en": "long shot"
+    },
+    {
+      "phrase": "全景",
+      "phrase_en": "full shot"
+    },
+    {
+      "phrase": "中景",
+      "phrase_en": "medium shot"
+    },
+    {
+      "phrase": "中近景",
+      "phrase_en": "medium close-up"
+    },
+    {
+      "phrase": "近景",
+      "phrase_en": "close shot"
+    },
+    {
+      "phrase": "特写",
+      "phrase_en": "close-up"
+    },
+    {
+      "phrase": "大特写",
+      "phrase_en": "extreme close-up"
+    }
+  ],
+  "运镜方式": [
+    {
+      "phrase": "固定机位",
+      "phrase_en": "static camera"
+    },
+    {
+      "phrase": "推近",
+      "phrase_en": "dolly in"
+    },
+    {
+      "phrase": "拉远",
+      "phrase_en": "dolly out"
+    },
+    {
+      "phrase": "摇镜",
+      "phrase_en": "pan"
+    },
+    {
+      "phrase": "移镜",
+      "phrase_en": "truck"
+    },
+    {
+      "phrase": "跟拍",
+      "phrase_en": "tracking shot"
+    },
+    {
+      "phrase": "升降",
+      "phrase_en": "pedestal"
+    },
+    {
+      "phrase": "环绕",
+      "phrase_en": "orbit"
+    },
+    {
+      "phrase": "手持摄影",
+      "phrase_en": "handheld camera"
+    },
+    {
+      "phrase": "变焦推近",
+      "phrase_en": "zoom in"
+    },
+    {
+      "phrase": "变焦拉远",
+      "phrase_en": "zoom out"
+    },
+    {
+      "phrase": "横滚",
+      "phrase_en": "roll"
+    },
+    {
+      "phrase": "强烈晃动",
+      "phrase_en": "shake strongly"
+    }
+  ],
+  "运镜方向": [
+    {
+      "phrase": "向前",
+      "phrase_en": "forward"
+    },
+    {
+      "phrase": "向后",
+      "phrase_en": "backward"
+    },
+    {
+      "phrase": "向左",
+      "phrase_en": "left"
+    },
+    {
+      "phrase": "向右",
+      "phrase_en": "right"
+    },
+    {
+      "phrase": "向上",
+      "phrase_en": "upward"
+    },
+    {
+      "phrase": "向下",
+      "phrase_en": "downward"
+    },
+    {
+      "phrase": "向左前方",
+      "phrase_en": "forward and to the left"
+    },
+    {
+      "phrase": "向右前方",
+      "phrase_en": "forward and to the right"
+    },
+    {
+      "phrase": "向左后方",
+      "phrase_en": "backward and to the left"
+    },
+    {
+      "phrase": "向右后方",
+      "phrase_en": "backward and to the right"
+    },
+    {
+      "phrase": "顺时针",
+      "phrase_en": "clockwise"
+    },
+    {
+      "phrase": "逆时针",
+      "phrase_en": "counterclockwise"
+    }
+  ],
+  "运镜幅度": [
+    {
+      "phrase": "小幅",
+      "phrase_en": "slight"
+    },
+    {
+      "phrase": "大幅",
+      "phrase_en": "large"
+    }
+  ],
+  "运镜速度": [
+    {
+      "phrase": "缓慢",
+      "phrase_en": "slow"
+    },
+    {
+      "phrase": "快速",
+      "phrase_en": "fast"
+    }
+  ],
+  "焦段": [
+    {
+      "phrase": "广角镜头",
+      "phrase_en": "wide-angle lens"
+    },
+    {
+      "phrase": "长焦镜头",
+      "phrase_en": "telephoto lens"
+    },
+    {
+      "phrase": "微距镜头",
+      "phrase_en": "macro lens"
+    }
+  ],
+  "氛围": [
+    {
+      "phrase": "紧张",
+      "phrase_en": "tense"
+    },
+    {
+      "phrase": "温馨",
+      "phrase_en": "warm and cozy"
+    },
+    {
+      "phrase": "悲伤",
+      "phrase_en": "sorrowful"
+    },
+    {
+      "phrase": "欢快",
+      "phrase_en": "cheerful"
+    },
+    {
+      "phrase": "悬疑",
+      "phrase_en": "suspenseful"
+    },
+    {
+      "phrase": "史诗",
+      "phrase_en": "epic"
+    },
+    {
+      "phrase": "宁静",
+      "phrase_en": "serene"
+    },
+    {
+      "phrase": "梦幻",
+      "phrase_en": "dreamlike"
+    }
+  ],
+  "情绪": [
+    {
+      "phrase": "平静",
+      "phrase_en": "calm"
+    },
+    {
+      "phrase": "愤怒",
+      "phrase_en": "angry"
+    },
+    {
+      "phrase": "喜悦",
+      "phrase_en": "joyful"
+    },
+    {
+      "phrase": "悲伤",
+      "phrase_en": "sad"
+    },
+    {
+      "phrase": "恐惧",
+      "phrase_en": "fearful"
+    },
+    {
+      "phrase": "惊讶",
+      "phrase_en": "surprised"
+    },
+    {
+      "phrase": "期待",
+      "phrase_en": "expectant"
+    },
+    {
+      "phrase": "失落",
+      "phrase_en": "dejected"
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+/* submit.css — 提交主链样式 (S1-2 T6)
+ * 1. 提交按钮: 工作区顶栏 .submit-bar-slot 内
+ * 2. 预检弹窗: .preflight-list / .preflight-item / .preflight-num / .preflight-code / .preflight-msg
+ * 3. PDD 预警条: 表单上方常驻条 (.pdd-warn-bar · 演示态隐藏)
+ * 4. 轮询 toast 复用现有 toast.js 样式 — 不重复定义
+ */
+
+.submit-bar-slot {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+}
+
+.submit-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  background: var(--acc, #4a90e2);
+  color: #fff;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+.submit-btn:hover:not(:disabled) {
+  background: var(--acc-h, #3a7bd0);
+}
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.submit-btn[data-phase="submitting"],
+.submit-btn[data-phase="polling"] {
+  background: var(--txt3, #999);
+}
+.submit-btn[data-phase="done"] {
+  background: var(--ok, #2da44e);
+}
+.submit-btn[data-phase="failed"],
+.submit-btn[data-phase="cancelled"] {
+  background: var(--err, #d44950);
+}
+
+/* ---- 预检弹窗 ---- */
+.preflight-list {
+  margin: 8px 0;
+  max-height: 360px;
+  overflow-y: auto;
+  font-size: 13px;
+}
+.preflight-empty {
+  color: var(--txt3, #888);
+  padding: 12px;
+  text-align: center;
+}
+.preflight-item {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 8px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--bd, #eee);
+  align-items: start;
+}
+.preflight-item:last-child {
+  border-bottom: none;
+}
+.preflight-num {
+  color: var(--txt3, #888);
+  font-variant-numeric: tabular-nums;
+}
+.preflight-code {
+  color: var(--err, #d44950);
+  font-family: var(--mono, "SFMono-Regular", Consolas, monospace);
+  font-size: 12px;
+  background: rgba(212, 73, 80, 0.08);
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.preflight-msg {
+  color: var(--txt, #333);
+  word-break: break-word;
+}
+
+/* ---- PDD 预警条（演示态隐藏 — hasPdd 恒 false） ---- */
+.pdd-warn-bar {
+  display: none;
+  padding: 8px 12px;
+  background: rgba(255, 193, 7, 0.15);
+  border-left: 3px solid #ffc107;
+  color: #8a6d00;
+  font-size: 13px;
+  margin-bottom: 12px;
+  border-radius: 3px;
+}
+.pdd-warn-bar.visible {
+  display: block;
+}

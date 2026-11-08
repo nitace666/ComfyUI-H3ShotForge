@@ -1,0 +1,184 @@
+/* assets.css — 资产库视图样式 (S1-4 T1 · 基线 E001-E007).
+ *
+ * 出处注记 (v43 原型 md5=43c85f743cfb8445f63fb8292c3355aa · 只读参照):
+ *   - :87    .agrid        资产卡墙网格
+ *   - :118-122 .usechks/.usechk/.usechk.locked  用途复选 (E005/E006)
+ *   - :123-126 .dyn-desc    用途描述联动区 (v29 勾几出几 · 取消即删)
+ *   - :2863-2871 .dd-row 行组 (标签 + 描述框 + 忽略词行 · 快批⑥ A6 定宽标签列/子行缩进)
+ *   - :547-548 .am-sec/.am-cap  弹窗分区 (v43 #amodal)
+ *   - :552   .mthumb       媒体行缩略框 (S3-2 T7 媒体行即时预览实装)
+ * 不重复出 theme.css 已有件: .acard/.acard .ph/.ac-ops/.empty-hint/.search/.fchip/.tagc/.mbox/.ghostbtn/.prim/.fbtn
+ * 模块新增类: .ph-img (缩略图真图层, 失败透明落回 kind 渐变底)
+ *             .fchips (类型过滤栏容器·v43 :623) / .tagchips (弹窗标签 chip 容器·v43 :555)
+ *             #assetTrash .recycle-row (回收站行·D55 卡面风格对齐)
+ *             快批⑥: .mrow-path (媒体行路径+选择文件) / .has-caret (导出下拉) /
+ *                    .dyn-desc .dd-body + .dd-ig (描述行组二级结构)
+ */
+
+/* ===== 卡墙 (v43 :87 · E001) ===== */
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(184px,1fr));gap:12px}
+
+/* ===== 类型过滤栏容器 (v43 :623 原文 · R4.6 D04/D05) — .fchip 本体在 theme.css :117-119 ===== */
+.fchips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+
+/* 批 10-C T4 (F52): 卡面 6 颗 op（编辑/删除/导出/三视图/多角度/裁剪）总宽超卡宽 → 换行到第二行
+   （.pov-pend 同款处置·其规则就在本文件下方「三视图状态条」段·批 10-I-T1 更正陈旧的 theme.css 指针） */
+.acard .ac-ops{flex-wrap:wrap}
+
+/* ===== 编辑弹窗标签 chip 容器 (v43 :555 原文 · R4.6 D08) — .tagc 本体在 theme.css :105-106 ===== */
+.tagchips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 6px}
+
+/* E001 缩略图真图层: 叠在 .ph 的 kind 渐变底上; thumb 404/加载失败时该层透明, 渐变底透出 */
+/* 走查反馈 F13（老板「缩略图被截断」·竖版人物图被 cover 裁腰）: cover→contain 完整显示——
+   竖图左右留深色底（.ph #111317 同底·不突兀）·横图满铺不变；方案 B（卡竖版化）/C（点图放大）备选 */
+.acard .ph .ph-img{position:absolute;left:0;right:0;top:0;bottom:0;background-size:contain;background-repeat:no-repeat;background-position:center}
+
+/* 走查反馈 F22: 多图卡错层叠显（.ph-stack 前 2 张 media——三视图采用后在卡面可见）；层内 contain 同 F13 口径 */
+.acard .ph-stack .layer{background-size:contain;background-repeat:no-repeat;background-position:center}
+
+/* 走查反馈 F32: 编辑弹窗媒体行区（GUI1.0 结构——一行一图·行条列表+当前行编辑区） */
+.am-sec .mrows-bar{display:flex;flex-direction:column;gap:4px;max-height:180px;overflow-y:auto;margin-bottom:4px}
+.am-sec .mrow-item{display:flex;align-items:center;gap:8px;padding:4px 8px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--panel2)}
+.am-sec .mrow-item:hover{border-color:var(--accent)}
+.am-sec .mrow-item.cur{border-color:var(--accent-bright);box-shadow:0 0 0 1px var(--accent-bright) inset}
+.am-sec .mrow-no{font-size:11px;color:var(--txt3);width:16px;flex-shrink:0}
+.am-sec .mrow-thumb{width:28px;height:28px;border-radius:5px;background-size:cover;background-position:center;background-color:#111317;flex-shrink:0}
+.am-sec .mrow-path-txt{flex:1;min-width:0;font-size:12px;color:var(--txt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.am-sec .mrow-item.cur .mrow-path-txt{color:var(--txt)}
+.am-sec .mrow-badges{font-size:11px;color:var(--accent-bright);flex-shrink:0}
+.am-sec .mrow-del{color:var(--txt3);cursor:pointer;padding:0 4px;flex-shrink:0;font-size:14px}
+.am-sec .mrow-del:hover{color:var(--bad)}
+/* F-76 断槽行「接回」钮（.mrow-back·button 件·形制对齐 .mrow-del）：去 UA 钮壳，
+   txt2 一档提亮抵 .mrow-item.dormant 的 opacity:.72 防整行压暗后钮子看不清 */
+.am-sec .mrow-back{color:var(--txt2);cursor:pointer;padding:0 4px;flex-shrink:0;font-size:11px;border:none;background:none;font-family:inherit}
+/* F66 断槽行（编辑弹窗行条·原图保留只读展示）: 虚线边+降透明度与可编辑行相区别 · 徽标转灰 */
+.am-sec .mrow-item.dormant{cursor:default;opacity:.72;border-style:dashed}
+.am-sec .mrow-item.dormant:hover{border-color:var(--line)}
+.am-sec .mrow-item.dormant .mrow-badges{color:var(--txt3)}
+/* 走查反馈 F15/F21/F34: 三视图状态条——生成中（◍ 转圈）/ 待审核（大缩略图可点开原图·采用/不通过）
+   走查反馈 F47: 卡内可用宽 ≈144-162px（.acard 10px 内距 + .pov-pend 8px 内距后）装不下 64 缩略图+两操作钮一行 →
+   flex-wrap 换行：缩略图+文案占首行（tag 弹性 basis 60px 保底宽度·不缩没），“✓采用/✕不通过”整对落到第二行；
+   两态（gen/待审）均在卡宽内完整可见，点击/hover 通道不变
+   批 10-I-T1 F68: rej 灰态规则成死规则随渲染死支一并删（旧语义条目已由 migrateLegacyPovPending 迁为断槽图） */
+.acard .pov-pend{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px;padding:6px 8px;border:1px solid var(--accent);border-radius:8px;background:var(--panel2)}
+.acard .pov-pend.gen{border-style:dashed;opacity:.85}
+.acard .pov-pend .pov-spin{font-size:13px;color:var(--accent-bright);animation:povspin 1.2s linear infinite}
+@keyframes povspin{to{transform:rotate(360deg)}}
+/* F34②: 待审缩略图放大（64px·可点开原图灯箱） */
+.acard .pov-pend .pov-thumb{width:64px;height:64px;border-radius:6px;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#111317;flex-shrink:0;cursor:zoom-in;border:1px solid var(--line)}
+/* F47: flex:1 → 1 1 60px（弹性 basis 保底）——窄卡上让位换行的是操作钮而非文案缩没 */
+.acard .pov-pend .pov-tag{font-size:11px;color:var(--accent-bright);flex:1 1 60px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acard .pov-pend .op{font-size:11px;cursor:pointer;flex-shrink:0;padding:2px 4px;border-radius:4px}
+.acard .pov-pend .pov-ok:hover{color:var(--accent-bright)}
+.acard .pov-pend .pov-no:hover{color:var(--bad)}
+
+/* 走查反馈 F34①: 灯箱（原图查看·thumb max_size=2048）——fixed 遮罩+居中图+底部路径 */
+.lb-mask{position:fixed;inset:0;background:#000c;z-index:120;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:zoom-out}
+.lb-mask .lb-img{max-width:92vw;max-height:86vh;border-radius:8px;box-shadow:0 12px 40px #000c}
+.lb-mask .lb-cap{margin-top:10px;font-size:12px;color:var(--txt3);max-width:80vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ===== 用途复选 (v43 :118-122 · E005/E006) =====
+   快批⑥ A5：flex-wrap → 等宽网格 —— 列数随弹窗宽自适应（auto-fill），
+   10 项按 USE_LIST 序（:2790-2802）逐格排；标签长短不再撑出锯齿左缘 */
+.usechks{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px 10px;margin-top:6px;font-size:12px;color:var(--txt2)}
+.usechk{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px;border:1px solid var(--line);border-radius:8px;padding:3px 8px;font-size:12px;color:var(--txt2);background:var(--panel2);cursor:pointer;user-select:none}
+.usechk input{margin:0}
+.usechk.locked{opacity:.45;cursor:not-allowed}
+.usechk.locked input{pointer-events:none}
+
+/* ===== 用途描述联动区 (v43 :123-126 · E005 v29/v30) =====
+   快批⑥ A6：标签列定宽（描述行/忽略词行左缘对齐·不再随标签长短撑宽）+ 标签顶对齐（去悬挂）；
+   忽略词行 = 描述框正下方子行（缩进从属·v43 :2865-2871 组），输入框 flex:1 到行尾 */
+.dyn-desc{margin-top:6px;display:flex;flex-direction:column;gap:4px}
+/* 走查反馈 F16: 行组改纵向——用途标签独立行（.dd-lblrow），提示词/忽略词在其下占满全宽
+   （原「左定宽 .lbl 80px + 右行组」输入框只占行宽 ~60%·老板截图定谳） */
+.dyn-desc .dd-row{display:flex;flex-direction:column;gap:4px}
+.dyn-desc .dd-row .dd-lblrow{font-size:12px;color:var(--txt2);padding:2px 0}
+.dyn-desc .dd-row .dd-body{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+/* F50: 忽略词行与提示词行同款顶对齐（label 贴 textarea 首行） */
+.dyn-desc .dd-row .dd-ig{display:flex;align-items:flex-start;gap:6px}
+/* 走查反馈 F50: 提示词/忽略词两 label 渲染宽不同（42px/36px·字体档位差）→ 输入框左缘错开 6px——
+   两 label 定宽 42px（min-width 防换行·提示词自然宽即 42px）→ 两行输入框左缘 = 行左 + 42 + gap 6 对齐 */
+.dyn-desc .dd-row .dd-ig .ig-lbl{font-size:12px;color:var(--txt3);flex-shrink:0;min-width:42px}
+/* 走查修复（2026-09-27）：描述框行式化——「提示词」标签（txt2·比忽略词深一档）+ 输入框同行 */
+.dyn-desc .dd-row .dd-main{display:flex;align-items:flex-start;gap:6px}
+.dyn-desc .dd-row .dd-main .desc-lbl{color:var(--txt2);min-width:42px}
+.dyn-desc .dd-row .dd-main textarea{flex:1;min-width:0}
+/* F50: 忽略词 input → textarea（长词表自动换行）；高度走下方 .dd-row textarea 共享规则（min-height:56px） */
+.dyn-desc .dd-row .dd-ig textarea{flex:1;min-width:0}
+.dyn-desc .dd-row textarea,.dyn-desc .dd-row input[type=text]{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;color:var(--txt);font-size:12px;outline:none;font-family:inherit;line-height:1.5;resize:vertical}
+.dyn-desc .dd-row textarea{min-height:56px}
+
+/* ===== 媒体行路径行 (快批⑥ A3：路径输入 + 「选择文件」) ===== */
+.mrow-path{display:flex;align-items:center;gap:6px}
+
+/* ===== 导出下拉 (快批⑥ A1：v43 :1675 单钮 → 全部导出 / 导出当前卡 两入口) ===== */
+
+/* ===== 弹窗分区 (v43 :547-548 · E004/E003) ===== */
+.am-sec{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;background:#111317}
+.am-cap{font-size:12px;color:var(--txt3);letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+
+/* 弹窗内输入件基础形 (theme.css .mbox input[type=text]/select 只给了底色边框, 此处补圆角内距) */
+.mbox .am-sec input[type=text],.mbox .am-sec textarea,.mbox .am-sec select{border-radius:8px;color:var(--txt);outline:none}
+.mbox .cfg .row{display:flex;align-items:center;gap:12px;margin-bottom:10px;font-size:13px}
+.mbox .cfg .row .k{color:var(--txt3);flex-shrink:0;width:72px}
+.mbox .cfg .row .v{color:var(--txt);flex:1;min-width:0}
+
+/* S2-1 修正笔 F2: 行级互斥置灰态（勾姿势 → 同行其他 Picture 用途） */
+.usechk.pose-mutex{opacity:.45}
+.usechk.pose-mutex input[type=checkbox]{cursor:not-allowed}
+
+/* ===== 媒体行缩略框 (v43 :552 · S3-2 T7 即时预览) =====
+   空路径/加载失败时框内出占位文案（沿用 .txt3 底色档位），成功时框内为 thumb 真图 */
+.mthumb{height:104px;background:#0d0e10;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--txt3);font-size:12px;overflow:hidden}
+.mthumb .mthumb-img{width:100%;height:100%;object-fit:contain}
+/* F34 修正笔: 弹窗内预览图/行条缩略图可点看原图（灯箱） */
+.mthumb:has(.mthumb-img){cursor:zoom-in}
+.am-sec .mrow-item .mrow-thumb{cursor:zoom-in}
+.mthumb.mthumb-fail{color:var(--bad)}
+
+/* ===== 裁剪弹窗 (v43 :136-145 · E031 · v26⑫ 全手势复刻) =====
+   结构/几何逐字照搬原型；唯一差异：.crop-stage 承载真图 <img class="crop-img">（原型为渐变示意图） */
+.crop-modal{position:fixed;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;z-index:110}
+/* F52 走查: 舞台加大一档（原 min(80vmin,520px)×min(60vmin,390px) 老板嫌小）——
+   .crop-frame 百分比几何 / 手柄定值随舞台等比观感，crop-hint/foot 挂 .crop-modal 全屏定位不与舞台重叠 */
+.crop-stage{position:relative;width:min(88vmin,880px);height:min(74vmin,620px);background:#16181b;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 40px #000a;overflow:hidden;cursor:move}
+.crop-stage .crop-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
+.crop-frame{position:absolute;left:10%;top:10%;width:80%;height:80%;border:2px dashed #fff;box-sizing:border-box;cursor:move;box-shadow:0 0 0 9999px #0006}
+.crop-frame .handle{position:absolute;width:12px;height:12px;background:#fff;border:1px solid #16181b;border-radius:8px}
+.crop-frame .h-tl{left:-7px;top:-7px;cursor:nwse-resize}
+.crop-frame .h-tr{right:-7px;top:-7px;cursor:nesw-resize}
+.crop-frame .h-bl{left:-7px;bottom:-7px;cursor:nesw-resize}
+.crop-frame .h-br{right:-7px;bottom:-7px;cursor:nwse-resize}
+.crop-frame .h-se{right:-22px;bottom:-22px;width:32px;height:32px;background:#38b6c4;border:2px solid #fff;border-radius:8px;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:600;cursor:se-resize}
+.crop-modal .crop-hint{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:#16181bd9;border:1px solid var(--line);border-radius:8px;padding:4px 10px;color:var(--txt2);font-size:12px;z-index:1}
+.crop-modal .crop-foot{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:10px}
+.crop-modal .crop-foot .prim{background:var(--accent);color:#eafcff;border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:600}
+.crop-modal .crop-foot .ghostbtn{border:1px solid var(--line);border-radius:8px;padding:7px 14px;color:var(--txt2);cursor:pointer;background:#16181bd9}
+
+/* ===== 回收站行 (R4.6 · D55 · 简洁形态=卡面风格) =====
+   行骨架（flex / nm 弹性 / meta 灰度 / 12px 圆角）沿 projects.css :87-89 的全局 .recycle-row 规则
+   （index.html :10 已载 · 分报告 D55「无 CSS」的判断只查了 theme.css/assets.css）；
+   资产页只补一处差异：行底色对齐卡面 .acard 同款 --panel2（theme.css :168）。 */
+#assetTrash .recycle-row{background:var(--panel2)}
+
+/* ===== B3-T2 F7: 三视图高级参数折叠区 (ui/canvas_params.js · .cvp- 前缀) =====
+   弹窗内 <details> 默认收起；外观接 theme.css 变量（去 legacy 内联样式）。 */
+.cvp-sec{margin-top:8px;border-top:1px solid var(--line);padding-top:6px}
+.cvp-sec>summary{list-style:none;cursor:pointer;color:var(--txt2);font-size:12px;user-select:none}
+.cvp-sec>summary::-webkit-details-marker{display:none}
+.cvp-lbl{color:var(--txt3);font-size:11px;margin:6px 0 2px}
+.cvp-sel{width:100%;padding:2px 6px;box-sizing:border-box;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);font-size:12px}
+.cvp-hd{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.cvp-hd .cvp-lbl{margin:0}
+.cvp-cbx{display:flex;align-items:center;gap:3px;color:var(--txt3);font-size:10px;cursor:pointer}
+.cvp-rows{margin-top:2px}
+.cvp-hint{color:var(--txt3);font-size:10px;margin-top:4px}
+.cvp-row{display:flex;align-items:center;gap:6px;margin-top:4px;padding:4px 6px;background:var(--panel2);border:1px solid var(--line);border-radius:8px}
+.cvp-lora-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:11px ui-monospace,Consolas,monospace;color:var(--txt)}
+.cvp-num{width:70px;padding:1px 4px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px}
+.cvp-txt{width:140px;padding:1px 4px;background:var(--panel2);color:var(--txt2);border:1px solid var(--line);border-radius:6px;font-size:10px}
+.cvp-res-lbl{width:64px;color:var(--txt3);font-size:11px}
+.cvp-res-cur{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:10px ui-monospace,Consolas,monospace;color:var(--txt3)}
+.cvp-res-sel{max-width:200px;padding:1px 4px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;font-size:10px}
+.cvp-help{margin-top:6px;padding:6px 8px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt3);font-size:11px;line-height:1.5;white-space:pre-wrap}

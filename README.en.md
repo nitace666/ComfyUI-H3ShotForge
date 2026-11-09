@@ -6,6 +6,27 @@
 
 H3ShotForge connects the whole loop: write a storyboard → attach references → submit renders → watch the film → edit on a timeline. The front end is a plain static web app (vanilla HTML/CSS/JS, no framework); the back end is a small Python dev server; generation is provided by the `ComfyUI-H3ShotForge` custom node. All project data stays on your machine.
 
+## Highlights
+
+- **Long videos on 12GB VRAM**: Concat mode merges multiple 5-second segments into one long film; measured on a 12GB GPU at 16:9 / 0.4MP / 5s per segment, producing a 5–6 minute film (varies with model and template).
+- **Storyboard mode**: one shot per segment, write prompts segment by segment; per-segment duration, seed and camera fields.
+- **One-click three-view assets**: turn a reference image into three-view / multi-angle cards; manage characters, scenes and props; drag into a segment to auto-reference with `@N`.
+- **Multimodal references**: attach images, video and audio to a segment; they are injected into the prompt automatically (`<Picture N>` / `<Video N>` / `<Audio N>`).
+- **AI storyboard assistant**: turn one sentence into multiple segments, rewrite prompts segment by segment, adopt results with one click (works with a local LLM).
+- **Audio continuity**: per-segment reference audio (voice lock) + split-track inheritance (vocals / background) + BGM, optional.
+- **Local-first**: project data, generation and LLM can all stay on your machine; local JSON data — copy to back up or migrate.
+- **Post-processing built in**: SeedVR2 / RTX VSR upscale, RIFE interpolation, concat and color matching.
+- **ComfyUI ecosystem**: built on the official MiniMax H3 nodes; workflow templates are replaceable and not locked to one model.
+- **Bilingual UI**: one-click toggle, Chinese by default, remembered per browser.
+
+## Three project modes
+
+| Mode | Best for | Behavior |
+|---|---|---|
+| **Storyboard** | Narrative / multi-shot | Each segment renders independently, no merge (good for chaining) |
+| **Concat** | Long videos | All segments are merged into one long film; small segments → long video, low-VRAM friendly |
+| **Custom** | Mixed | Choose which segments join the merge (others stay separate) |
+
 ## Screenshots
 
 | Home | Canvas |
@@ -26,11 +47,11 @@ H3ShotForge connects the whole loop: write a storyboard → attach references �
 
 - **Projects**: create / open / import / recycle bin; recent projects sorted by last opened.
 - **Storyboard & prompts**: edit segment cards in place; per-segment duration, seed, camera fields (angle / shot size / movement / focal length / mood / emotion) and reference images.
-- **Asset library**: character / scene / prop cards, three-view / multi-angle, reference audio, drag into a segment to auto-reference with `@N`.
+- **Asset library**: character / scene / prop cards with **one-click three-view / multi-angle generation** and reference audio; drag into a segment to auto-reference with `@N`.
 - **Canvas**: wire global params, segments, assets and processing nodes into a graph; pan, zoom, undo / redo.
 - **AI collaboration**: optional OpenAI-compatible LLM for rewriting, shot splitting and adopting results back into the storyboard.
-- **Submit & render**: preflight → ComfyUI batch → progress / stop / resume; automatic segmentation, concat, upscale and interpolation for long videos.
-- **Preview & edit**: full-film preview; timeline editing (split, speed, reverse, freeze, transitions, multi-candidates, audio tracks) and post-processing.
+- **Submit & render**: preflight → ComfyUI batch → progress / stop / resume; multi-segment merge, upscale and interpolation (long films can be auto-segmented by the post-processing threshold).
+- **Preview & edit**: full-film preview; timeline split / speed / transitions / version compare / multi-candidates / audio separation / copy-paste and reorder / undo-redo; BGM and clip volume, fade in/out; upscale and interpolation.
 - **History & run records**: inspect outputs per task, rerun, copy as a new project, load parameter snapshots.
 - **Bilingual UI**: switch with the `中｜EN` control at the bottom-left (or in Settings); Chinese by default, remembered per browser.
 

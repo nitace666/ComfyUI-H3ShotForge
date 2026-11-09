@@ -11,6 +11,8 @@ H3ShotForge connects the whole loop: write a storyboard → attach references �
 - **Long videos on 12GB VRAM**: Concat mode merges multiple 5-second segments into one long film; measured on a 12GB GPU at 16:9 / 0.4MP / 5s per segment, producing a 5–6 minute film (varies with model and template).
 - **Storyboard mode**: one shot per segment, write prompts segment by segment; per-segment duration, seed and camera fields.
 - **One-click three-view assets**: turn a reference image into three-view / multi-angle cards; manage characters, scenes and props; drag into a segment to auto-reference with `@N`.
+- **Per-segment redo**: re-run any single segment you are unhappy with (new seed / same seed / changed params / multiple candidates) without touching the others; failed segments can be handled with “Re-render failed only”.
+- **Resume after interruption**: “Resume unfinished” continues from segment K after a multi-segment task stops — completed segments are kept, no need to start over.
 - **Multimodal references**: attach images, video and audio to a segment; they are injected into the prompt automatically (`<Picture N>` / `<Video N>` / `<Audio N>`).
 - **AI storyboard assistant**: turn one sentence into multiple segments, rewrite prompts segment by segment, adopt results with one click (works with a local LLM).
 - **Audio continuity**: per-segment reference audio (voice lock) + split-track inheritance (vocals / background) + BGM, optional.
@@ -50,7 +52,7 @@ H3ShotForge connects the whole loop: write a storyboard → attach references �
 - **Asset library**: character / scene / prop cards with **one-click three-view / multi-angle generation** and reference audio; drag into a segment to auto-reference with `@N`.
 - **Canvas**: wire global params, segments, assets and processing nodes into a graph; pan, zoom, undo / redo.
 - **AI collaboration**: optional OpenAI-compatible LLM for rewriting, shot splitting and adopting results back into the storyboard.
-- **Submit & render**: preflight → ComfyUI batch → progress / stop / resume; multi-segment merge, upscale and interpolation (long films can be auto-segmented by the post-processing threshold).
+- **Submit & render**: preflight → ComfyUI batch → progress / stop / **resume from segment K**; **per-segment redo / re-render failed only**; multi-segment merge, upscale and interpolation (long films can be auto-segmented by the post-processing threshold).
 - **Preview & edit**: full-film preview; timeline split / speed / transitions / version compare / multi-candidates / audio separation / copy-paste and reorder / undo-redo; BGM and clip volume, fade in/out; upscale and interpolation.
 - **History & run records**: inspect outputs per task, rerun, copy as a new project, load parameter snapshots.
 - **Bilingual UI**: switch with the `中｜EN` control at the bottom-left (or in Settings); Chinese by default, remembered per browser.

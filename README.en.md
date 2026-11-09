@@ -42,7 +42,7 @@ GUI1.4/                            Web front end + dev server (this repo)
 ```
 
 - **GUI**: `app/` (static pages) + `scripts/devserver.py` (Python standard-library HTTP server for static files, data I/O and engine proxying).
-- **Engine**: ComfyUI plugin providing batch rendering, prompt assembly, concat / color matching / post-processing and LLM sessions; listens on `8190` by default.
+- **Engine**: ComfyUI plugin providing batch rendering, prompt assembly, concat / color matching / post-processing and LLM sessions; it runs inside ComfyUI (no separate port — ComfyUI defaults to `8188`, use your actual address).
 - The two talk over HTTP. The GUI can browse and edit existing projects offline, but **rendering requires the engine**.
 
 ## Requirements
@@ -51,10 +51,49 @@ GUI1.4/                            Web front end + dev server (this repo)
 |---|---|
 | OS | Windows 10 / 11 (primary tested environment; Linux / macOS untested) |
 | Python | 3.10+ (tested on 3.11) |
-| ComfyUI | A working custom-node environment (tested with ComfyUI Desktop / 1.47.x) |
+| ComfyUI | Must include the official MiniMax H3 nodes (core v0.30.0+; use the latest desktop build); H3 models and workflow templates are not bundled |
 | ffmpeg / ffprobe | Needed for concat, color matching, post-processing and audio tracks; if not on PATH, set `ffprobe_exe` in `h3_config.json` |
 | H3 models & workflow templates | **Not bundled**; install them in ComfyUI and point `workflow_dir` at your templates |
 | LLM (optional) | AI collaboration needs an OpenAI-compatible endpoint (LM Studio or a hosted API) |
+
+## Supported workflows
+
+The engine identifies template families by **structure + file name**:
+
+| Family | Supported | Notes |
+|---|---|---|
+| **ref2v** | ✅ recommended | Template contains `MiniMaxH3ReferenceToVideo`; supports reference images / video / audio (`<Picture N>` / `<Video N>` / `<Audio N>`), optional Turbo LoRA. Example: `turboVA+CK/h3_ref2va_8V8A_CK.json` |
+| **t2v** | ✅ | Text-only generation (anonymous workflow / no H3 reference node), for shots without references |
+| i2v / fl2v | ❌ retired | The engine rejects them: “i2v/fl2v 已废除，请改用 ref2v 模板” |
+
+- **Location**: `workflow_dir` in `h3_config.json`; the engine scans every `.json` recursively (skipping directories whose name contains “备份”), and the GUI template dropdown reads from it.
+- **Template requirements**: a native ComfyUI H3 workflow (ref2v templates use the official `MiniMaxH3ReferenceToVideo` with `MiniMaxH3SigmaShift`, `BasicScheduler` / `KSamplerSelect` / `BasicGuider` and the audio/video decode chain), saved as JSON; the engine rewrites prompt, seed, duration and reference inputs. `MiniMaxH3ImageToVideo` i2v/fl2v templates are rejected (retired).
+- **Templates are not bundled**: provide your own (see Downloads).
+
+## Post-processing (upscale / interpolation)
+
+| Capability | Engine option | Template | Node pack / source |
+|---|---|---|---|
+| Upscale | SeedVR2 (default) | `h3_postfx_upscale.json` (bundled) | [ComfyUI-SeedVR2_VideoUpscaler](https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler) (official SeedVR2 ComfyUI release; models per its README) |
+| Upscale | RTX VSR | `h3_postfx_upscale_rtx.json` (bundled) | [Comfy-Org/Nvidia_RTX_Nodes_ComfyUI](https://github.com/Comfy-Org/Nvidia_RTX_Nodes_ComfyUI) (drop-in alternative: [ComfyUI-NVIDIA-RTX-VSR-Pro](https://github.com/whmc76/ComfyUI-NVIDIA-RTX-VSR-Pro)); requires an NVIDIA RTX GPU + driver + `nvidia-vfx` |
+| Interpolation | RIFE | `h3_postfx_interp.json` (bundled) | [ComfyUI-Frame-Interpolation](https://github.com/Fannovel16/ComfyUI-Frame-Interpolation) (run `install.bat` as described there) |
+
+- All three post-processing templates ship with the plugin (loaded from `docs/证据-1.14b/templates/` first; the RTX template also exists at the plugin root).
+- Enable them under “Setup → Params → Post-processing”. RTX VSR only works on RTX GPUs; SeedVR2 is VRAM-hungry and long videos are segmented automatically.
+
+## Downloads & resources
+
+| Purpose | URL | Notes |
+|---|---|---|
+| ComfyUI | https://github.com/comfyanonymous/ComfyUI | Must include the official MiniMax H3 nodes (core v0.30.0+; latest desktop build) |
+| H3 model weights (official) | https://huggingface.co/MiniMaxAI/MiniMax-H3 | Published by MiniMax |
+| H3 model (ComfyUI repack) | https://huggingface.co/Comfy-Org/MiniMax-H3 | Paths/naming tailored to ComfyUI |
+| H3 models + sample workflows (third-party pack) | https://comfyit.cn/article/506 | Recommended by the AIMixer director README; third-party site — verify licensing and version yourself |
+| H3 Director (optional, not this engine) | https://github.com/AIMixer/ComfyUI_MiniMaxH3_Director | Useful reference for workflows and resources |
+| ffmpeg / ffprobe | https://ffmpeg.org/download.html | Required for concat, post-processing and audio tracks |
+| SeedVR2 / RTX VSR / RIFE | see the table above | Post-processing node packs |
+
+> Models, main workflow JSONs and ffmpeg binaries are not bundled. Put models under `ComfyUI/models/` and workflow JSONs under `workflow_dir`.
 
 ## Installation
 
@@ -71,8 +110,10 @@ GUI1.4/                            Web front end + dev server (this repo)
 4. Start ComfyUI and verify the engine is up:
 
    ```
-   http://127.0.0.1:8190/system_stats
+   http://127.0.0.1:8188/system_stats
    ```
+
+   > ComfyUI defaults to port 8188; if yours runs on 8190 or another port, use that address instead.
 
 ### 2. Start the GUI
 
@@ -93,7 +134,7 @@ GUI1.4/                            Web front end + dev server (this repo)
 
 ### 3. First-time settings
 
-- **Engine & models → Engine address**: defaults to `http://127.0.0.1:8190`; the **Auto Scan** button probes 8188–8200.
+- **Engine & models → Engine address**: defaults to `http://127.0.0.1:8190` (change it to your ComfyUI's actual port; ComfyUI defaults to 8188); the **Auto Scan** button probes 8188–8200.
 - **Workspace / output / template directories**: set to your local paths; the template directory must contain your H3 workflow JSON files.
 - **AI collaboration (optional)**: configure an OpenAI-compatible Base URL / key / model preset in Settings.
 
@@ -137,10 +178,10 @@ GUI1.4/
 ## FAQ
 
 **The engine shows “disconnected”?**
-Check that `http://127.0.0.1:8190/system_stats` opens. Then use **Auto Scan** or enter the engine address in Settings. Restart ComfyUI after changing engine config.
+Check that your ComfyUI address opens (default `http://127.0.0.1:8188/system_stats`; use 8190 if that is your port). Then use **Auto Scan** or enter the engine address in Settings. Restart ComfyUI after changing engine config.
 
 **Port already in use?**
-The GUI defaults to 8940 (the engine uses 8190). If 8940 is taken, start with another port (`py scripts\devserver.py 8941`) and update the browser URL.
+The GUI defaults to 8940; the engine port is ComfyUI's own (default 8188). If 8940 is taken, start with another port (`py scripts\devserver.py 8941`) and update the browser URL.
 
 **ffmpeg errors during concat / post-processing?**
 Make sure ffmpeg/ffprobe are installed; if not on PATH, set `ffprobe_exe` to its absolute path in `h3_config.json`, then restart ComfyUI.
@@ -160,6 +201,8 @@ Check the LLM preset's Base URL / key / model in Settings. For local LM Studio, 
 ## Known limitations / not included
 
 - H3 models, CLIP / VAE / LoRA weights, workflow templates and ffmpeg binaries are not bundled.
+- **Only ref2v / t2v templates are supported; i2v / fl2v are retired** (the engine rejects them).
+- **RTX VSR requires an NVIDIA RTX GPU and driver**; SeedVR2 is VRAM-hungry and segments long videos automatically.
 - The English UI covers the framework and main flows; a few long help texts and **your own data values** (project names, asset names, prompts) stay as entered.
 - Windows is the primary tested platform; Linux / macOS untested.
 - No built-in accounts / permissions — designed for **single-user local use**. Do not expose it directly to the public internet.

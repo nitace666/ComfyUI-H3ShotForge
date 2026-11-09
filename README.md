@@ -42,7 +42,7 @@ GUI1.4/                          网页前端 + 开发服务器（本仓库）
 ```
 
 - **GUI**：`app/`（静态页面）+ `scripts/devserver.py`（Python 标准库 HTTP 服务，负责静态文件、数据读写、引擎转发）。
-- **引擎端**：ComfyUI 插件，提供批处理、提示词装配、拼接 / 调色 / 后期、LLM 会话等能力，默认监听 `8190`。
+- **引擎端**：ComfyUI 插件，提供批处理、提示词装配、拼接 / 调色 / 后期、LLM 会话等能力；作为插件随 ComfyUI 启动（不单独监听端口，ComfyUI 默认 `8188`，以你的实际地址为准）。
 - 两者通过 HTTP 通信；GUI 可以脱离引擎查看和编辑已有项目，但**生成必须引擎在线**。
 
 ## 环境要求
@@ -51,10 +51,49 @@ GUI1.4/                          网页前端 + 开发服务器（本仓库）
 |---|---|
 | 操作系统 | Windows 10 / 11（当前主要验证环境；Linux / macOS 未验证） |
 | Python | 3.10+（验证环境 3.11） |
-| ComfyUI | 需可运行的自定义节点环境（验证环境 ComfyUI Desktop / 1.47.x） |
+| ComfyUI | 需含官方 MiniMax H3 节点（核心 v0.30.0+；桌面版用最新版）；本仓库不附带 H3 模型与工作流模板 |
 | ffmpeg / ffprobe | 拼接、调色、后期、音轨处理需要；未加入 PATH 时在 `h3_config.json` 里写 `ffprobe_exe` |
 | H3 模型与工作流模板 | **不在本仓库内**，需自备并放到 ComfyUI 与 `workflow_dir` |
 | LLM（可选） | AI 协作需要 OpenAI 兼容接口（LM Studio / 在线 API 均可） |
+
+## 支持的工作流
+
+引擎按**模板结构 + 文件名**识别模板族：
+
+| 模板族 | 支持 | 说明 |
+|---|---|---|
+| **ref2v** | ✅ 推荐 | 模板含 `MiniMaxH3ReferenceToVideo`；支持参考图 / 参考视频 / 参考音频（`<Picture N>` / `<Video N>` / `<Audio N>`），可挂 Turbo LoRA。示例：`turboVA+CK/h3_ref2va_8V8A_CK.json` |
+| **t2v** | ✅ | 纯文本生成（匿名工作流 / 无 H3 参考节点），适合无参考素材的镜头 |
+| i2v / fl2v | ❌ 已废除 | 引擎会拒绝并提示「i2v/fl2v 已废除，请改用 ref2v 模板」 |
+
+- **模板位置**：`h3_config.json` 的 `workflow_dir`；引擎递归扫描该目录下所有 `.json`（跳过名字含「备份」的目录），GUI 的「工作流模板」下拉直接读取。
+- **模板要求**：ComfyUI 原生 H3 工作流（ref2v 模板使用官方 `MiniMaxH3ReferenceToVideo`，配合 `MiniMaxH3SigmaShift`、`BasicScheduler` / `KSamplerSelect` / `BasicGuider` 与音视频解码链路），保存为 JSON；引擎会改写提示词、种子、时长、参考素材等输入。`MiniMaxH3ImageToVideo` 的 i2v/fl2v 模板会被拒绝（已废除）。
+- **模板不自带**：主工作流 JSON 需自备（见「下载与资源」）。
+
+## 后处理（超分 / 插帧）
+
+| 能力 | 引擎选项 | 模板 | 节点包 / 获取 |
+|---|---|---|---|
+| 超分 | SeedVR2（默认） | `h3_postfx_upscale.json`（自带） | [ComfyUI-SeedVR2_VideoUpscaler](https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler)（SeedVR2 官方 ComfyUI 版；模型见其 README） |
+| 超分 | RTX VSR | `h3_postfx_upscale_rtx.json`（自带） | [Comfy-Org/Nvidia_RTX_Nodes_ComfyUI](https://github.com/Comfy-Org/Nvidia_RTX_Nodes_ComfyUI)（兼容替代：[ComfyUI-NVIDIA-RTX-VSR-Pro](https://github.com/whmc76/ComfyUI-NVIDIA-RTX-VSR-Pro)）；需 NVIDIA RTX 显卡 + 驱动 + `nvidia-vfx` |
+| 插帧 | RIFE | `h3_postfx_interp.json`（自带） | [ComfyUI-Frame-Interpolation](https://github.com/Fannovel16/ComfyUI-Frame-Interpolation)（按 README 运行 `install.bat`） |
+
+- 三个后处理模板随插件提供（优先从 `docs/证据-1.14b/templates/` 加载；RTX 模板另有一份在插件根目录），无需自备。
+- 在「Setup → 参数 → 后处理」组开启；RTX VSR 仅支持 RTX 显卡；SeedVR2 显存占用较高，长视频会自动分段。
+
+## 下载与资源
+
+| 用途 | 地址 | 备注 |
+|---|---|---|
+| ComfyUI 本体 | https://github.com/comfyanonymous/ComfyUI | 需含官方 MiniMax H3 节点（核心 v0.30.0+；桌面版用最新版） |
+| H3 模型权重（官方） | https://huggingface.co/MiniMaxAI/MiniMax-H3 | MiniMax 官方发布 |
+| H3 模型（ComfyUI 整理版） | https://huggingface.co/Comfy-Org/MiniMax-H3 | 路径/命名更贴合 ComfyUI |
+| H3 模型 + 示例工作流（第三方资源包） | https://comfyit.cn/article/506 | AIMixer 导演台 README 推荐；第三方站点，请自行确认授权与版本 |
+| H3 导演台（可选，非本引擎） | https://github.com/AIMixer/ComfyUI_MiniMaxH3_Director | 可参考其工作流与资源说明 |
+| ffmpeg / ffprobe | https://ffmpeg.org/download.html | 拼接、后期、音轨必需 |
+| SeedVR2 / RTX VSR / RIFE | 见上一节 | 后处理节点包 |
+
+> 本仓库不附带模型权重、主工作流模板与 ffmpeg 二进制。模型放 `ComfyUI/models/`，工作流 JSON 放 `workflow_dir`。
 
 ## 安装
 
@@ -71,8 +110,10 @@ GUI1.4/                          网页前端 + 开发服务器（本仓库）
 4. 启动 ComfyUI，确认引擎在线：
 
    ```
-   http://127.0.0.1:8190/system_stats
+   http://127.0.0.1:8188/system_stats
    ```
+
+   > ComfyUI 默认端口是 8188；若你的 ComfyUI 跑在 8190 等端口，换成实际地址即可。
 
 ### 2. 启动 GUI
 
@@ -93,7 +134,7 @@ GUI1.4/                          网页前端 + 开发服务器（本仓库）
 
 ### 3. 首次配置（设置页）
 
-- **引擎与模型 → 引擎地址**：默认 `http://127.0.0.1:8190`，可点「自动扫描」探测 8188–8200。
+- **引擎与模型 → 引擎地址**：默认 `http://127.0.0.1:8190`（按你的 ComfyUI 实际端口修改；ComfyUI 默认 8188），可点「自动扫描」探测 8188–8200。
 - **工作区 / 输出目录 / 模板目录**：按本机实际路径填写；模板目录需指向你的 H3 工作流 JSON 所在目录。
 - **AI 协作（可选）**：在设置页配置 OpenAI 兼容的 Base URL / Key / 模型预设。
 
@@ -137,10 +178,10 @@ GUI1.4/
 ## 常见问题
 
 **引擎显示「未连接」？**
-先确认 `http://127.0.0.1:8190/system_stats` 能打开；再在设置页点「自动扫描」或手填引擎地址。修改引擎配置后需重启 ComfyUI。
+先确认你的 ComfyUI 地址能打开（默认 `http://127.0.0.1:8188/system_stats`；若用 8190 则替换）；再在设置页点「自动扫描」或手填引擎地址。修改引擎配置后需重启 ComfyUI。
 
 **端口被占用？**
-GUI 默认 8940，与引擎 8190 错开。若 8940 被占用，换一个端口：`py scripts\devserver.py 8941`，浏览器地址同步改。
+GUI 默认 8940；引擎端口以 ComfyUI 为准（默认 8188）。若 8940 被占用，换一个端口：`py scripts\devserver.py 8941`，浏览器地址同步改。
 
 **拼接 / 后期报 ffmpeg 错误？**
 确认 ffmpeg/ffprobe 已安装；不在 PATH 时在 `h3_config.json` 填 `ffprobe_exe` 的绝对路径，然后重启 ComfyUI。
@@ -160,6 +201,8 @@ GUI 默认 8940，与引擎 8190 错开。若 8940 被占用，换一个端口�
 ## 已知限制 / 未包含
 
 - 不含 H3 模型、CLIP / VAE / LoRA 权重、工作流模板与 ffmpeg 二进制，需自行准备。
+- **仅支持 ref2v / t2v 模板；i2v / fl2v 已废除**（引擎会拒绝）。
+- **RTX VSR 需要 NVIDIA RTX 显卡与驱动**；SeedVR2 对显存要求较高，长视频会自动分段处理。
 - 英文界面覆盖框架与常用路径；少量长帮助文本与**你输入的数据值**（项目名、资产名、提示词）保持原样。
 - 目前以 Windows 为主要验证环境；Linux / macOS 未验证。
 - 无内置账号 / 权限系统，设计为**本机单用户**使用；请勿直接暴露到公网。
